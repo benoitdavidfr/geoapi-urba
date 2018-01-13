@@ -432,7 +432,5 @@ definitions:
               type: object
               description: géométrie de l'objet géographique
 externalDocs:
-  - description: Standards CNIG de dématérialisation des documents d'urbanisme
-    url: 'http://cnig.gouv.fr/?page_id=2732'
-  - description: Guide méthodologique de numérisation des SUP
-    url: 'http://www.geoinformations.developpement-durable.gouv.fr/servitudes-d-utilite-publiques-sup-r978.html'
+  description: dépôt GitHub de documentation
+  url: https://github.com/benoitdavidfr/geoapi-urba
