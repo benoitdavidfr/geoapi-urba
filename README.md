@@ -19,7 +19,7 @@ L'API est définie sur Swagger, conformément aux préconisations de la DINSIC :
 Ce dépôt contient les scripts de mise en oeuvre de l'API.    
 Les données exposées par l'APi sont moissonnées dans le géoportail de l'urbanisme au travers de son flux Atom ;
 dans un premier temps on se limite à 100 Go de stockage des zip (la taille du disque).
-Une base MongoDB est générée par l'analyse des données moissonnées puis consultée lors de l'activation de l'API.
+L'analyse des données moissonnées génère une base MongoDB qui est consultée lors de l'activation de l'API.
 Les pièces écrites sont conservées dans les zips.
 
 Le répertoire racine contient le script api2.php utilisé pour l'API.
