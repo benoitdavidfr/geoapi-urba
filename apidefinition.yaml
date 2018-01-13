@@ -1,0 +1,325 @@
+swagger: '2.0'
+info:
+  description: >-
+    API d'accès aux documents d'urbanisme et aux servitudes d'utilité publique français.
+    
+    Dans cette version seul l'accès aux documents d'urbanisme est défini.
+    
+    Toutes les données proviennent du [géoportail de l'urbanisme](https://www.geoportail-urbanisme.gouv.fr/).
+    
+  version: 0.2.0
+  title: API d'accès aux documents d'urbanisme et aux servitudes d'utilité publique français
+  termsOfService: 'http://urba.geoapi.fr/terms/'
+  contact:
+    email: urba@geoapi.fr
+  license:
+    name: Licence ouverte version 2.0
+    url: 'https://www.etalab.gouv.fr/wp-content/uploads/2017/04/ETALAB-Licence-Ouverte-v2.0.pdf'
+host: urba.geoapi.fr
+basePath: /
+schemes:
+  - http
+  - https
+paths:
+  /:
+    get:
+      tags:
+        - documentation de l'API
+      summary: Retourne la documentation de l'API générée par http://swagger.io/ en HTML ou en JSON
+      operationId: doc
+      produces:
+        - text/html
+        - application/json
+      responses:
+        '200':
+          description: opération réussie
+  /autorites:
+    get:
+      tags:
+        - document d'urbanisme
+      summary: Retourne les autorités en charge de documents d'urbanisme (communes et EPCI)
+      description: >-
+        La liste retournée peut être filtrée grâce aux paramètres ;
+        les documents d'urbanismes des autorités ne sont pas retournés.
+      operationId: listeAutorites
+      produces:
+        - application/json
+      parameters:
+        - name: commune
+          in: query
+          description: code(s) INSEE d'une (plusieurs) commune(s) intersectant le territoire des autorités
+          type: array
+          items:
+            type: string
+        - name: epci
+          in: query
+          description: code(s) SIRENE d'un (plusieurs) EPCI intersectant le territoire des autorités
+          type: array
+          items:
+            type: string
+        - name: departement
+          in: query
+          description: code(s) INSEE d'un (plusieurs) département(s) intersectant le territoire des autorités
+          type: array
+          items:
+            type: string
+        - name: q
+          in: query
+          description: motif (regexp) correspondant au nom de l'autorité
+          type: string
+      responses:
+        '200':
+          description: opération réussie
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Autorite'
+        '400':
+          description: paramètre fourni invalide
+        '404':
+          description: aucun résultat ne correspond à cette requête
+  '/autorites/{idAutorite}':
+    get:
+      tags:
+        - document d'urbanisme
+      summary: Retourne l'autorité définie par son identifiant ainsi que ses documents d'urbanisme
+      operationId: autoriteParId
+      produces:
+        - application/json
+      parameters:
+        - name: idAutorite
+          in: path
+          description: ID de l'autorité à retourner
+          required: true
+          type: string
+      responses:
+        '200':
+          description: opération réussie
+          schema:
+            $ref: '#/definitions/Autorite'
+        '400':
+          description: id fourni invalide
+        '404':
+          description: aucun résultat ne correspond à cette requête
+  '/docurba/{idurba}':
+    get:
+      tags:
+        - document d'urbanisme
+      summary: Retourne le document d'urbanisme défini par son identifiant
+      operationId: docUrbaParId
+      produces:
+        - application/json
+      parameters:
+        - name: idurba
+          in: path
+          description: ID du document d'urbanisme demandé
+          required: true
+          type: string
+      responses:
+        '200':
+          description: opération réussie
+          schema:
+            $ref: '#/definitions/DocUrba'
+        '400':
+          description: paramètre fourni invalide
+        '404':
+          description: aucun résultat ne correspond à cette requête
+        '500':
+          description: erreur du serveur
+  '/docurba/{idurba}/{classeCnig}':
+    get:
+      tags:
+        - document d'urbanisme
+      summary: Retourne les objets géographiques {classeCnig} correspondants au document défini par son identifiant
+      operationId: objetsGeoDeDocUrba
+      produces:
+        - application/json
+      parameters:
+        - name: idurba
+          in: path
+          description: ID du document d'urbanisme
+          required: true
+          type: string
+        - name: classeCnig
+          in: path
+          description: classe d'objets géographiques définie par le standard CNIG
+          required: true
+          type: string
+          enum:
+            - ZONE_URBA
+            - SECTEUR_CC
+            - PRESCRIPTION_PCT
+            - PRESCRIPTION_LIN
+            - PRESCRIPTION_SURF
+            - INFO_PCT
+            - INFO_LIN
+            - INFO_SURF
+            - HABILLAGE_PCT
+            - HABILLAGE_LIN
+            - HABILLAGE_SURF
+            - HABILLAGE_TXT
+      responses:
+        '200':
+          description: opération réussie
+          schema:
+            $ref: '#/definitions/FeatureCollection'
+        '400':
+          description: paramètre fourni invalide
+        '404':
+          description: aucun résultat ne correspond à cette requête
+  '/docurba/{idurba}/Pieces_ecrites/{path}':
+    get:
+      tags:
+        - document d'urbanisme
+      summary: Retourne un des documents PDF correspondants au document défini par l'identifiant
+      operationId: getOnePieceEcriteForDu
+      produces:
+        - application/pdf
+      parameters:
+        - name: idurba
+          in: path
+          description: ID du document d'urbanisme
+          required: true
+          type: string
+        - name: path
+          in: path
+          description: chemin du document PDF dans le zip
+          required: true
+          type: string
+      responses:
+        '200':
+          description: opération réussie
+        '400':
+          description: paramètre fourni invalide
+        '404':
+          description: aucun résultat ne correspond à cette requête
+definitions:
+  Autorite:
+    type: object
+    required:
+      - id
+      - libelle
+      - nature
+      - etat
+      - uri
+    properties:
+      id:
+        type: string
+        example: '21054'
+      libelle:
+        type: string
+        example : Commune de Beaune
+      nature:
+        type: string
+        description: nature de l'autorité
+        enum:
+          - commune
+          - EPCI
+      departement:
+        type: string
+        description: code du département de l'autorité
+        example: '21'
+      etat:
+        type: string
+        description: état de l'autorité
+        enum:
+          - actuel
+          - périmé
+      uri:
+        type: string
+        example: http://urba.geoapi.fr/autorites/21054
+      docUrba:
+        type: array
+        items:
+          $ref: '#/definitions/DocUrba'
+  DocUrba:
+    type: object
+    required:
+      - idurba
+      - nature
+      - approbation
+      - uri
+    properties:
+      idurba:
+        type: string
+        description: id du document d'urbanisme
+      libelle:
+        type: string
+        description: libellé du document d'urbanisme
+      idAutorite:
+        type: string
+        description: id de l'autorité en charge du document d'urbanisme
+      libelleAutorite:
+        type: string
+        description: libellé de l'autorité en charge du document d'urbanisme
+      departement:
+        type: string
+        description: département dans lequel le document d'urbanisme se situe
+      nature:
+        type: string
+        description: nature du document d'urbanisme
+        enum:
+          - PLU
+          - PLUI
+          - POS
+          - CC
+          - PSMV
+      etat:
+        type: string
+        description: état du document
+        enum:
+          - arrêté
+          - approuvé
+          - opposable
+          - annulé
+          - partiellement annulé
+          - remplacé
+          - abrogé
+          - caduc
+      approbation:
+        type: string
+        description: date d'approbation du document par l'autorité en charge
+      fin:
+        type: string
+        description: date de fin d'opposabilité s'il n'est plus opposable
+      uri:
+        type: string
+      piecesEcrites:
+        type: array
+        items:
+          type: string
+          description: liste des URL des pièces écrites
+      
+  FeatureCollection:
+    type: object
+    required:
+      - type
+      - features
+    properties:
+      type:
+        type: string
+        description: la valeur 'FeatureCollection'
+        example: FeatureCollection
+      features:
+        type: array
+        description: liste des Features
+        items:
+          type: object
+          required:
+            - type
+            - properties
+            - geometry
+          properties:
+            type:
+              type: string
+              description: la valeur 'Feature'
+              example: Feature
+            properties:
+              type: object
+              description: propriétés de l'objet géographique
+            geometry:
+              type: object
+              description: géométrie de l'objet géographique
+externalDocs:
+  description: Standards CNIG de dématérialisation des documents d'urbanisme
+  url: 'http://cnig.gouv.fr/?page_id=2732'

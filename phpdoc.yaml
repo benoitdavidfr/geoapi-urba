@@ -1,0 +1,17 @@
+title: urba.geoapi.fr - API d'accès à des données du GpU
+path: /geoapi/urba
+doc: |
+  L'API d'accès est définie par le fichier Swagger apidefinition.yaml.
+  Elle est implémentée par api.php et correspond à l'URL: http://urba.geoapi.fr/
+  Sans paramètre cette URL renvoie la documentation générée par Swagger
+  L'API lit ses données dans la base MongoDB qui est générée à partir du GpU dans le projet build
+journal: |
+  6/1/2018 :
+    création
+submodules:
+  - /geoapi/urba/build
+htmlFiles:
+  - /geoapi/urba/apidefinition.yaml
+  - /geoapi/urba/terms.html
+phpScripts:
+  - /geoapi/urba/api.php
