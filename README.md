@@ -17,7 +17,7 @@ L'API est définie sur Swagger, conformément aux préconisations de la DINSIC :
     servitudes d'utilité publiques (SUP).
 
 Ce dépôt contient les scripts de mise en oeuvre de l'API.    
-Les données exposées par l'APi sont moissonnées dans le géoportail de l'urbanisme au travers de son flux Atom ;
+Les données exposées par l'API sont moissonnées dans le géoportail de l'urbanisme au travers de son flux Atom ;
 dans un premier temps on se limite à 100 Go de stockage des zip (la taille du disque).
 L'analyse des données moissonnées génère une base MongoDB qui est consultée lors de l'activation de l'API.
 Les pièces écrites sont conservées dans les zips.
@@ -27,5 +27,6 @@ Le répertoire racine contient le script api2.php utilisé pour l'API.
 Le répertoire build contient les scripts utilisés pour initialiser la base MongoDB.
 
 Documentation complémentaire:
+  - [Flux Atom du géoportail de l'urbanisme](https://www.geoportail-urbanisme.gouv.fr/atom/download-feed/)
   - [Standards CNIG de dématérialisation des documents d'urbanisme](http://cnig.gouv.fr/?page_id=2732)
   - [Guide méthodologique de numérisation des SUP](http://www.geoinformations.developpement-durable.gouv.fr/servitudes-d-utilite-publiques-sup-r978.html)

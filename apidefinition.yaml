@@ -5,6 +5,8 @@ info:
     
     Toutes les données proviennent du [géoportail de l'urbanisme](https://www.geoportail-urbanisme.gouv.fr/).
     
+    Cette version 0.3.0 définit l'accès aux servitudes d'utilité publiques (SUP)
+    
   version: 0.3.0
   title: API d'accès aux documents d'urbanisme et aux servitudes d'utilité publique français
   termsOfService: 'http://urba.geoapi.fr/terms/'
@@ -103,7 +105,7 @@ paths:
     get:
       tags:
         - document d'urbanisme
-      summary: Retourne le document d'urbanisme défini par son identifiant
+      summary: Retourne le document d'urbanisme défini par son identifiant ainsi que la liste de ses pièces écrites
       operationId: docUrbaParId
       produces:
         - application/json
@@ -124,6 +126,57 @@ paths:
           description: aucun résultat ne correspond à cette requête
         '500':
           description: erreur du serveur
+  '/docurba/{idurba}/metadata':
+    get:
+      tags:
+        - document d'urbanisme
+      summary: Retourne les métadonnées associées au document d'urbanisme défini par son identifiant
+      operationId: mdDocUrbaParId
+      produces:
+        - application/xml
+      parameters:
+        - name: idurba
+          in: path
+          description: ID du document d'urbanisme demandé
+          required: true
+          type: string
+      responses:
+        '200':
+          description: document XML des métadonnées
+        '400':
+          description: paramètre fourni invalide
+        '404':
+          description: aucun résultat ne correspond à cette requête
+        '500':
+          description: erreur du serveur
+  '/docurba/{idurba}/Pieces_ecrites/{path}':
+    get:
+      tags:
+        - document d'urbanisme
+      summary: Retourne en PDF une des pièces écrites associées au document défini par son identifiant
+      operationId: getOnePieceEcriteForDu
+      produces:
+        - application/pdf
+      parameters:
+        - name: idurba
+          in: path
+          description: ID du document d'urbanisme
+          required: true
+          type: string
+        - name: path
+          in: path
+          description: chemin du document PDF dans le zip
+          required: true
+          type: string
+      responses:
+        '200':
+          description: un fichier PDF
+          schema:
+            type: file
+        '400':
+          description: paramètre fourni invalide
+        '404':
+          description: aucun résultat ne correspond à cette requête
   '/docurba/{idurba}/{classeCnig}':
     get:
       tags:
@@ -165,37 +218,11 @@ paths:
           description: paramètre fourni invalide
         '404':
           description: aucun résultat ne correspond à cette requête
-  '/docurba/{idurba}/Pieces_ecrites/{path}':
-    get:
-      tags:
-        - document d'urbanisme
-      summary: Retourne un des documents PDF correspondants au document défini par l'identifiant
-      operationId: getOnePieceEcriteForDu
-      produces:
-        - application/pdf
-      parameters:
-        - name: idurba
-          in: path
-          description: ID du document d'urbanisme
-          required: true
-          type: string
-        - name: path
-          in: path
-          description: chemin du document PDF dans le zip
-          required: true
-          type: string
-      responses:
-        '200':
-          description: opération réussie
-        '400':
-          description: paramètre fourni invalide
-        '404':
-          description: aucun résultat ne correspond à cette requête
   /sup:
     get:
       tags:
         - servitude d'utilité publique
-      summary: Retourne l'ensemble des catégories de servitudes d'utilité publiques (SUP)
+      summary: Retourne les catégories de servitudes d'utilité publiques (SUP)
       operationId: ensembleCategoriesSup
       produces:
         - application/json
@@ -231,7 +258,7 @@ paths:
     get:
       tags:
         - servitude d'utilité publique
-      summary: Retourne l'ensemble des territoires pour lesquels au moins un jeu de données est disponible pour la catégorie de SUP fournie
+      summary: Retourne les territoires pour lesquels au moins un jeu de données est exposé pour la catégorie de SUP fournie
       operationId: ensembleTerritoiresSup
       produces:
         - application/json
@@ -268,8 +295,8 @@ paths:
     get:
       tags:
         - servitude d'utilité publique
-      summary: Retourne l'ensemble des jeux de données disponibles pour une catégorie de SUP et un territoire
-      operationId: ensembleJDSup
+      summary: Retourne les jeux de données exposés pour une catégorie de SUP et un territoire
+      operationId: jdSup
       produces:
         - application/json
       parameters:
@@ -291,15 +318,140 @@ paths:
             items:
               type: object
               required:
-                - code
+                - codeSup
+                - codeTerritoire
+                - idjd
                 - libelle
               properties:
-                idjd:
+                codeSup:
+                  type: string
+                  example: PM3
+                codeTerritoire:
                   type: string
                   example: 13
+                idjd:
+                  type: string
+                  description: version du jeu de données
+                  example: 20180115
                 libelle:
                   type: string
-                  example: xxx
+                  description: libellé du jeu de données
+                  example: SUP PM3 sur les Bouches du Rhône, version du 15/01/2018
+        '400':
+          description: code fourni invalide
+        '404':
+          description: aucun résultat ne correspond à cette requête
+  '/sup/{codeSup}/{codeTerritoire}/{idjd}/{classeCnig}':
+    get:
+      tags:
+        - servitude d'utilité publique
+      summary: Retourne les objets géographiques {classeCnig} correspondants à une catégorie de SUP, un territoire et une version
+      operationId: objetsGeoSup
+      produces:
+        - application/json
+      parameters:
+        - name: codeSup
+          in: path
+          description: code définissant la catégorie de SUP
+          required: true
+          type: string
+        - name: codeTerritoire
+          in: path
+          description: code définissant le territoire sur lequel des SUP sont définies
+          required: true
+          type: string
+        - name: idjd
+          in: path
+          description: version du jeu de données pour la catégorie de SUP et le territoire
+          required: true
+          type: string
+        - name: classeCnig
+          in: path
+          description: classe d'objets géographiques définie par le standard CNIG
+          required: true
+          type: string
+          enum:
+            - ASSIETTE
+            - GENERATEUR
+      responses:
+        '200':
+          description: opération réussie
+          schema:
+            $ref: '#/definitions/FeatureCollection'
+        '400':
+          description: code fourni invalide
+        '404':
+          description: aucun résultat ne correspond à cette requête
+  '/sup/{codeSup}/{codeTerritoire}/{idjd}/actes':
+    get:
+      tags:
+        - servitude d'utilité publique
+      summary: Retourne les URL des actes exposés correspondants à une catégorie de SUP, un territoire et une version
+      operationId: lesActesSup
+      produces:
+        - application/json
+      parameters:
+        - name: codeSup
+          in: path
+          description: code définissant la catégorie de SUP
+          required: true
+          type: string
+        - name: codeTerritoire
+          in: path
+          description: code définissant le territoire sur lequel des SUP sont définies
+          required: true
+          type: string
+        - name: idjd
+          in: path
+          description: version du jeu de données pour la catégorie de SUP et le territoire
+          required: true
+          type: string
+      responses:
+        '200':
+          description: opération réussie
+          schema:
+            type: array
+            items:
+              type: string
+              description: liste des URL des actes
+        '400':
+          description: code fourni invalide
+        '404':
+          description: aucun résultat ne correspond à cette requête
+  '/sup/{codeSup}/{codeTerritoire}/{idjd}/actes/{path}':
+    get:
+      tags:
+        - servitude d'utilité publique
+      summary: Retourne en PDF un des actes associés à une SUP
+      operationId: unActeSup
+      produces:
+        - application/pdf
+      parameters:
+        - name: codeSup
+          in: path
+          description: code définissant la catégorie de SUP
+          required: true
+          type: string
+        - name: codeTerritoire
+          in: path
+          description: code définissant le territoire sur lequel des SUP sont définies
+          required: true
+          type: string
+        - name: idjd
+          in: path
+          description: version du jeu de données pour la catégorie de SUP et le territoire
+          required: true
+          type: string
+        - name: path
+          in: path
+          description: chemin du document PDF dans le zip
+          required: true
+          type: string
+      responses:
+        '200':
+          description: un fichier PDF
+          schema:
+            type: file
         '400':
           description: code fourni invalide
         '404':
@@ -400,7 +552,6 @@ definitions:
         items:
           type: string
           description: liste des URL des pièces écrites
-      
   FeatureCollection:
     type: object
     required:
