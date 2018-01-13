@@ -6,7 +6,7 @@ du [géoportail de l'urbanisme](https://www.geoportail-urbanisme.gouv.fr/).
 L'objectif de ce projet est de faciliter la concertation pour la définition de cette API.
 L'API finale devrait être mise en oeuvre par l'IGN, opérateur du géoportail de l'urbanisme.
 
-L'API est définie sur Swagger:
+L'API est définie sur Swagger, conformément aux préconisations de la DINSIC :
   - la [version 0.1.0](https://swaggerhub.com/apis/benoitdavidfr/urba.geoapi.fr/0.1.0) est un premier jet ;
     elle ne concerne que l'accès aux documents d'urbanisme ;
     aucune mise en oeuvre n'est proposée ;
