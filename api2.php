@@ -6,6 +6,8 @@ doc: |
   Ce script correspond à la définition https://swaggerhub.com/apis/benoitdavidfr/urba.geoapi.fr/0.2.0
   l'URL http://urba.geoapi.fr est redirigée vers http://vps496729.ovh.net/urba/api2.php
 journal: |
+  13/1/2018:
+    ajout des filtres sur /autorites
   12/1/2018:
     utilisation de MongoDB sur MacBook/OVH
   6/1/2018:
@@ -36,11 +38,11 @@ if (!isset($_SERVER['PATH_INFO']) or ($_SERVER['PATH_INFO']=='/')) {
       break;
   if ($http_accept=='application/json') {
     header('Content-type: application/json; charset="utf8"');
-    echo file_get_contents('https://api.swaggerhub.com/apis/benoitdavidfr/urba.geoapi.fr/0.2.0');
+    echo file_get_contents('https://api.swaggerhub.com/apis/benoitdavidfr/urba.geoapi.fr');
     die();
   }
   header('HTTP/1.1 307 Temporary Redirect');
-  header("Location: https://swaggerhub.com/apis/benoitdavidfr/urba.geoapi.fr/0.2.0");
+  header("Location: https://swaggerhub.com/apis/benoitdavidfr/urba.geoapi.fr");
   die();
 }
 
@@ -55,11 +57,21 @@ $uriAutorites = "http://urba.geoapi.fr/autorites/";
 
 // /autorites
 if (preg_match('!^/autorites$!', $_SERVER['PATH_INFO'])) {
+  $departement = (isset($_GET['departement']) ? $_GET['departement'] : null);
+  $epci = (isset($_GET['epci']) ? $_GET['epci'] : null);
+  $commune = (isset($_GET['commune']) ? $_GET['commune'] : null);
+  
   $mgdbclient = new MongoDB\Client($mongouri);
   $baseurba = $mgdbclient->urba;
   $autorites = [];
   foreach ($baseurba->autorite->find() as $doc) {
     $doc = json_decode(json_encode($doc), true);
+    if ($departement and ($doc['departement']<>$departement))
+      continue;
+    if ($epci and ($doc['_id']<>$epci))
+      continue;
+    if ($commune and !in_array($commune, $doc['communes']))
+      continue;
     $autorites[] = [
       'id'=> $doc['_id'],
       'libelle'=> $doc['libelle'],

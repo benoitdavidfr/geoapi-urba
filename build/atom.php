@@ -13,7 +13,7 @@ doc: |
 if (isset($_GET['url']))
   $url = $_GET['url'];
 else
-  $url = 'http://www.geoportail-urbanisme.gouv.fr/atom/download-feed/';
+  $url = 'https://www.geoportail-urbanisme.gouv.fr/atom/download-feed/';
 $xmlstr = file_get_contents($url,'r');
 if ($xmlstr === FALSE)
   die("Erreur d'ouverture du flux $url");

@@ -3,11 +3,9 @@ info:
   description: >-
     API d'accès aux documents d'urbanisme et aux servitudes d'utilité publique français.
     
-    Dans cette version seul l'accès aux documents d'urbanisme est défini.
-    
     Toutes les données proviennent du [géoportail de l'urbanisme](https://www.geoportail-urbanisme.gouv.fr/).
     
-  version: 0.2.0
+  version: 0.3.0
   title: API d'accès aux documents d'urbanisme et aux servitudes d'utilité publique français
   termsOfService: 'http://urba.geoapi.fr/terms/'
   contact:
@@ -193,6 +191,119 @@ paths:
           description: paramètre fourni invalide
         '404':
           description: aucun résultat ne correspond à cette requête
+  /sup:
+    get:
+      tags:
+        - servitude d'utilité publique
+      summary: Retourne l'ensemble des catégories de servitudes d'utilité publiques (SUP)
+      operationId: ensembleCategoriesSup
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: opération réussie
+          schema:
+            type: array
+            items:
+              type: object
+              required:
+                - codeSup
+                - libelleSup
+              properties:
+                codeSup:
+                  type: string
+                  description: code définissant la catégorie de SUP
+                  example: PM3
+                libelleSup:
+                  type: string
+                  description: libellé de la catégorie de SUP
+                  example: Zones réglementées des plans de prévention des risques technologiques (PPRT)
+                decoupage:
+                  type: string
+                  description: définition du découpage des jeux de données
+                  enum:
+                    - departement
+                urlFiche:
+                  type: string
+                  description: URL de la fiche présentant cette catégorie de SUP
+                  example: http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/fiche_pm3_cle078662.pdf?arg=177835096&cle=ccc13553ec66986d3e142f5d40e150fc14366aa8&file=pdf%2Ffiche_pm3_cle078662.pdf
+  '/sup/{codeSup}':
+    get:
+      tags:
+        - servitude d'utilité publique
+      summary: Retourne l'ensemble des territoires pour lesquels au moins un jeu de données est disponible pour la catégorie de SUP fournie
+      operationId: ensembleTerritoiresSup
+      produces:
+        - application/json
+      parameters:
+        - name: codeSup
+          in: path
+          description: code définissant la catégorie de SUP
+          required: true
+          type: string
+      responses:
+        '200':
+          description: opération réussie
+          schema:
+            type: array
+            items:
+              type: object
+              required:
+                - codeTerritoire
+                - libelleTerritoire
+              properties:
+                codeTerritoire:
+                  type: string
+                  description: code définissant le territoire
+                  example: 13
+                libelleTerritoire:
+                  type: string
+                  description: libellé du territoire
+                  example: Département des Bouches du Rhône
+        '400':
+          description: code fourni invalide
+        '404':
+          description: aucun résultat ne correspond à cette requête
+  '/sup/{codeSup}/{codeTerritoire}':
+    get:
+      tags:
+        - servitude d'utilité publique
+      summary: Retourne l'ensemble des jeux de données disponibles pour une catégorie de SUP et un territoire
+      operationId: ensembleJDSup
+      produces:
+        - application/json
+      parameters:
+        - name: codeSup
+          in: path
+          description: code définissant la catégorie de SUP
+          required: true
+          type: string
+        - name: codeTerritoire
+          in: path
+          description: code définissant le territoire sur lequel des SUP sont définies
+          required: true
+          type: string
+      responses:
+        '200':
+          description: opération réussie
+          schema:
+            type: array
+            items:
+              type: object
+              required:
+                - code
+                - libelle
+              properties:
+                idjd:
+                  type: string
+                  example: 13
+                libelle:
+                  type: string
+                  example: xxx
+        '400':
+          description: code fourni invalide
+        '404':
+          description: aucun résultat ne correspond à cette requête
 definitions:
   Autorite:
     type: object
@@ -321,5 +432,7 @@ definitions:
               type: object
               description: géométrie de l'objet géographique
 externalDocs:
-  description: Standards CNIG de dématérialisation des documents d'urbanisme
-  url: 'http://cnig.gouv.fr/?page_id=2732'
+  - description: Standards CNIG de dématérialisation des documents d'urbanisme
+    url: 'http://cnig.gouv.fr/?page_id=2732'
+  - description: Guide méthodologique de numérisation des SUP
+    url: 'http://www.geoinformations.developpement-durable.gouv.fr/servitudes-d-utilite-publiques-sup-r978.html'
