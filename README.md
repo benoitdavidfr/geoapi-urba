@@ -8,8 +8,9 @@ L'API finale devrait être mise en oeuvre par l'IGN, opérateur du géoportail d
 
 L'API est définie sur Swagger:
   - la [version 0.1.0](https://swaggerhub.com/apis/benoitdavidfr/urba.geoapi.fr/0.1.0) est un premier jet ;
-    elle ne permet d'accéder qu'aux documents d'urbanisme ;
+    elle ne concerne que l'accès aux documents d'urbanisme ;
     aucune mise en oeuvre n'est proposée ;
+    l'objectif était principalement de découvrir l'utilisation de Swagger ;
   - la [version 0.2.0](https://swaggerhub.com/apis/benoitdavidfr/urba.geoapi.fr/0.2.0) est proposée avec une première mise en oeuvre sur environ 1300 documents d'urbanisme ; les pièces écrites sont aussi exposées.
 
 Ce dépôt contient les scripts produits pour la mise en oeuvre de l'API.    
