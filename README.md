@@ -11,11 +11,11 @@ L'API est définie sur Swagger:
 
 Ce dépôt contient les scripts produits pour la mise en oeuvre de l'API.    
 Pour initialiser cette mise en oeuvre, le géoportail de l'urbanisme a été moissonné pour récupérer un certain nombre de documents en se limitant à 100 Go de stockage des zip (la taille du disque).
-Les données moissonnées ont été analysées et le résultat stocké dans une base MongoDB.
-Lors de l'activation de l'API, les informations sont extraites de cette base à l'exception des pièces écrites qui sont
-extraites des zips.
+Les données moissonnées ont été analysées et le résultat stocké dans une base MongoDB
+consultée lors de l'activation de l'API.
+Les informations sont extraites de cette base à l'exception des pièces écrites qui sont conservées dans les zips.
 
-Le répertoire racine contient le script utilisé pour l'API (api2.php).
+Le répertoire racine contient le script api2.php utilisé pour l'API.
 
 Le répertoire build contient les scripts utilisés pour initialiser la base MongoDB.
 
