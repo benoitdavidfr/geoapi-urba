@@ -3,7 +3,8 @@
 name: api2.php
 title: api2.php - script exécuté pour l'API
 doc: |
-  l'URL http://urba.geoapi.fr est redirigée vers http://geoapi.fr/urba/api.php
+  Ce script correspond à la définition https://swaggerhub.com/apis/benoitdavidfr/urba.geoapi.fr/0.2.0
+  l'URL http://urba.geoapi.fr est redirigée vers http://vps496729.ovh.net/urba/api2.php
 journal: |
   12/1/2018:
     utilisation de MongoDB sur MacBook/OVH
@@ -35,11 +36,11 @@ if (!isset($_SERVER['PATH_INFO']) or ($_SERVER['PATH_INFO']=='/')) {
       break;
   if ($http_accept=='application/json') {
     header('Content-type: application/json; charset="utf8"');
-    echo file_get_contents('https://api.swaggerhub.com/apis/benoitdavidfr/urba.geoapi.fr/0.1.0');
+    echo file_get_contents('https://api.swaggerhub.com/apis/benoitdavidfr/urba.geoapi.fr/0.2.0');
     die();
   }
-  header('HTTP/1.1 301 Moved Permanently');
-  header("Location: https://swaggerhub.com/apis/benoitdavidfr/urba.geoapi.fr/0.1.0");
+  header('HTTP/1.1 307 Temporary Redirect');
+  header("Location: https://swaggerhub.com/apis/benoitdavidfr/urba.geoapi.fr/0.2.0");
   die();
 }
 
