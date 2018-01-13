@@ -3,7 +3,7 @@
 Proposition de définition pour l'API d'accès aux données
 du [géoportail de l'urbanisme](https://www.geoportail-urbanisme.gouv.fr/).    
 
-L'objectif de ce projet est de faciliter la concertation sur la définition de cette API.
+L'objectif de ce projet est de faciliter la concertation pour la définition de cette API.
 L'API finale devrait être mise en oeuvre par l'IGN, opérateur du géoportail de l'urbanisme.
 
 L'API est définie sur Swagger:
