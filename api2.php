@@ -3,9 +3,11 @@
 name: api2.php
 title: api2.php - script exécuté pour l'API
 doc: |
-  Ce script correspond à la définition https://swaggerhub.com/apis/benoitdavidfr/urba.geoapi.fr/0.2.0
+  Ce script correspond à la définition https://swaggerhub.com/apis/benoitdavidfr/urba.geoapi.fr
   l'URL http://urba.geoapi.fr est redirigée vers http://vps496729.ovh.net/urba/api2.php
 journal: |
+  13/1/2018:
+    ajout des points d'entrée /sup
   13/1/2018:
     ajout des filtres sur /autorites
   12/1/2018:
@@ -15,6 +17,7 @@ journal: |
 */
 require_once __DIR__.'/../../vendor/autoload.php';
 require_once __DIR__.'/mongouri.inc.php';
+require_once __DIR__.'/../../spyc/spyc2.inc.php';
 
 /*
 echo "api.php<br>\n";
@@ -93,7 +96,7 @@ if (preg_match('!^/autorites/([^/]+)$!', $_SERVER['PATH_INFO'], $matches)) {
   $baseurba = $mgdbclient->urba;
   $doc = $baseurba->autorite->findOne(['_id'=> $id]);
   if (!$doc) {
-    header("HTTP/1.0 404 Not Found");
+    header("HTTP/1.1 404 Not Found");
     header('Content-type: text/plain; charset="utf8"');
     echo "Erreur: aucune autorité ne correspond a l'identifiant $id\n";
     die();
@@ -164,6 +167,14 @@ if (preg_match('!^/docurba/([^/]+)$!', $_SERVER['PATH_INFO'], $matches)) {
   }
   header('Content-type: application/json; charset="utf8"');
   echo json_encode($docUrba, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
+  die();
+}
+
+// /docurba/{idurba}/metadata
+if (preg_match('!^/docurba/([^/]+)/metadata$!', $_SERVER['PATH_INFO'], $matches)) {
+  header("HTTP/1.1 501 Not Implemented");
+  header('Content-type: text/plain; charset="utf8"');
+  echo "Erreur: fonctionnalité non implémentée\n";
   die();
 }
 
@@ -245,6 +256,195 @@ if (preg_match('!^/docurba/([^/]+)/([^/]+)$!', $_SERVER['PATH_INFO'], $matches))
     die();
   }
 }
+
+
+// /sup
+if (preg_match('!^/sup$!', $_SERVER['PATH_INFO'])) {
+  $yaml = spycLoad(__DIR__.'/supcat.yaml');
+  if (!$yaml) {
+    header("HTTP/1.1 500 Internal Server Error");
+    header('Content-type: text/plain; charset="utf8"');
+    echo "Erreur: fichier supcat.yaml non trouvé\n";
+    die();
+  }
+  $supcats = [];
+  foreach ($yaml['contents'] as $codeSup => $content) {
+    $supcat = [
+      'codeSup'=> $codeSup,
+      'libelleSup'=> $content['libelle'],
+    ];
+    foreach(['decoupage','urlFiche'] as $cle)
+      if (isset($content[$cle]))
+        $supcat[$cle] = $content[$cle];
+    $supcats[] = $supcat;
+  }
+  header('Content-type: application/json; charset="utf8"');
+  echo json_encode($supcats, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
+  die();
+}
+
+// /sup/{codeSup}
+// Retourne les territoires pour lesquels au moins un jeu de données est exposé pour la catégorie de SUP fournie
+if (preg_match('!^/sup/([^/]+)$!', $_SERVER['PATH_INFO'], $matches)) {
+  $codeSup = $matches[1];
+  $mgdbclient = new MongoDB\Client($mongouri);
+  $baseurba = $mgdbclient->urba;
+  $codeTerritoires = [];
+  foreach ($baseurba->sup->find(['codeSup'=> $codeSup]) as $sup) {
+    $sup = json_decode(json_encode($sup), true);
+    $codeTerritoires[$sup['codeTerritoire']] = 1;
+  }
+  $result = [];
+  foreach (array_keys($codeTerritoires) as $codeTerritoire) {
+    $result[] = ['codeTerritoire'=> (string)$codeTerritoire];
+  }
+  header('Content-type: application/json; charset="utf8"');
+  echo json_encode($result, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
+  die();
+}
+
+// /sup/{codeSup}/{codeTerritoire}
+// Retourne les jeux de données exposés pour une catégorie de SUP et un territoire
+if (preg_match('!^/sup/([^/]+)/([^/]+)$!', $_SERVER['PATH_INFO'], $matches)) {
+  $codeSup = $matches[1];
+  $codeTerritoire = $matches[2];
+  $mgdbclient = new MongoDB\Client($mongouri);
+  $baseurba = $mgdbclient->urba;
+  $dateRefs = [];
+  foreach ($baseurba->sup->find(['codeSup'=> $codeSup, 'codeTerritoire'=> $codeTerritoire]) as $sup) {
+    $sup = json_decode(json_encode($sup), true);
+    $dateRefs[$sup['dateref']] = 1;
+  }
+  $result = [];
+  foreach (array_keys($dateRefs) as $dateRef) {
+    $dateRef = (string)$dateRef;
+    $result[] = [
+      'codeSup'=> $codeSup,
+      'codeTerritoire'=> $codeTerritoire,
+      'dateRef'=> $dateRef,
+    ];
+  }
+  header('Content-type: application/json; charset="utf8"');
+  echo json_encode($result, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
+  die();
+}
+
+// /sup/{codeSup}/{codeTerritoire}/{dateRef}
+// Retourne les URL des actes exposés correspondants à une catégorie de SUP, un territoire et une version
+if (preg_match('!^/sup/([^/]+)/([^/]+)/([^/]+)$!', $_SERVER['PATH_INFO'], $matches)) {
+  $codeSup = $matches[1];
+  $codeTerritoire = $matches[2];
+  $dateRef = $matches[3];
+  $idsup = "${codeSup}_${codeTerritoire}_${dateRef}";
+  $mgdbclient = new MongoDB\Client($mongouri);
+  $baseurba = $mgdbclient->urba;
+  $sup = $baseurba->sup->findOne(['_id'=> $idsup]);
+  $sup = json_decode(json_encode($sup), true);
+  if (!$sup) {
+    header("HTTP/1.1 404 Bad Request");
+    header('Content-type: text/plain; charset="utf8"');
+    echo "Aucun JD de SUP ne correspond à l'identifiant $idsup\n";
+    die();
+  }
+  $result = [
+    'codeSup'=> $sup['codeSup'],
+    'codeTerritoire'=> $sup['codeTerritoire'],
+    'dateRef'=> $sup['dateref'],
+    'uri'=> "http://urba.geoapi.fr/sup/$codeSup/$codeTerritoire/$dateRef",
+    'actes'=> [],
+  ];
+  foreach ($sup['actes'] as $acte) {
+    $result['actes'][] = "http://urba.geoapi.fr/sup/$codeSup/$codeTerritoire/$dateRef/Actes/$acte[0]";
+  }
+  //echo "<pre>"; print_r($sup); print_r($result);
+  header('Content-type: application/json; charset="utf8"');
+  echo json_encode($result, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
+  die();
+}
+
+// /sup/{codeSup}/{codeTerritoire}/{dateRef}/metadata
+if (preg_match('!^/sup/([^/]+)/([^/]+)/([^/]+)/metadata$!', $_SERVER['PATH_INFO'], $matches)) {
+  header("HTTP/1.1 501 Not Implemented");
+  header('Content-type: text/plain; charset="utf8"');
+  echo "Erreur: fonctionnalité non implémentée\n";
+  die();
+}
+
+// /sup/{codeSup}/{codeTerritoire}/{dateRef}/actes/{path}
+// Retourne en PDF un des actes associés à une SUP
+if (preg_match('!^/sup/([^/]+)/([^/]+)/([^/]+)/Actes/(.+)$!', $_SERVER['PATH_INFO'], $matches)) {
+  $codeSup = $matches[1];
+  $codeTerritoire = $matches[2];
+  $dateRef = $matches[3];
+  $shortpath = $matches[4];
+  $idsup = "${codeSup}_${codeTerritoire}_${dateRef}";
+  $mgdbclient = new MongoDB\Client($mongouri);
+  $baseurba = $mgdbclient->urba;
+  $doc = $baseurba->sup->findOne(['_id'=> $idsup]);
+  if (!$doc) {
+    header("HTTP/1.1 404 Not Found");
+    header('Content-type: text/plain; charset="utf8"');
+    echo "Aucun JD de SUP ne correspond à l'identifiant $idsup\n";
+    die();
+  }
+  $doc = json_decode(json_encode($doc), true);
+  $longpath = null;
+  foreach ($doc['actes'] as $acte) {
+    if ($acte[0]==$shortpath)
+      $longpath = $acte[1];
+  }
+  if (!$longpath) {
+    header("HTTP/1.1 404 Bad Request");
+    header('Content-type: text/plain; charset="utf8"');
+    echo "Erreur: aucun acte ne correspond à $shortpath\n";
+    die();
+  }
+  header('Content-type: application/pdf; charset="utf8"');
+  $pathinzip = "zip://build/zips/$doc[zipname]#$longpath";
+  if (readfile($pathinzip) === FALSE) {
+    header('Content-type: text/plain; charset="utf8"');
+    die("Erreur d'ouverture de $pathinzip");
+  }
+  die();
+}
+
+// /sup/{codeSup}/{codeTerritoire}/{dateRef}/{classeCnig}
+// Retourne les objets géographiques {classeCnig} correspondants à une catégorie de SUP, un territoire et une version
+if (preg_match('!^/sup/([^/]+)/([^/]+)/([^/]+)/((ASSIETTE|GENERATEUR)[^/]+)$!', $_SERVER['PATH_INFO'], $matches)) {
+  $codeSup = $matches[1];
+  $codeTerritoire = $matches[2];
+  $dateRef = $matches[3];
+  $classeCnig = $matches[4];
+  $collection = 'sup_'.strtolower($classeCnig);
+  $mgdbclient = new MongoDB\Client($mongouri);
+  $baseurba = $mgdbclient->urba;
+  $idsup = "${codeSup}_${codeTerritoire}_${dateRef}";
+  $first = true;
+  foreach ($baseurba->$collection->find(['IDSUP'=> $idsup]) as $doc) {
+    unset($doc['_id']);
+    unset($doc['IDSUP']);
+    if ($first) {
+      header('Content-type: application/json; charset="utf8"');
+      echo "[\n";
+      $first = false;
+    }
+    else
+      echo ",\n";
+    echo json_encode($doc, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
+  }
+  if ($first) {
+    header("HTTP/1.1 404 Bad Request");
+    header('Content-type: text/plain; charset="utf8"');
+    echo "Erreur: aucun objet géographique ne correspond à la classe $classeCnig du JD de SUP $idsup\n";
+    die();
+  } else {
+    echo "\n]\n";
+    die();
+  }
+}
+
+
+
 
 header('HTTP/1.1 400 Bad Request');
 echo "Unknown query\n";

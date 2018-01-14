@@ -82,7 +82,7 @@ paths:
     get:
       tags:
         - document d'urbanisme
-      summary: Retourne l'autorité définie par son identifiant ainsi que ses documents d'urbanisme
+      summary: Retourne les caractéristiques de l'autorité définie par son identifiant ainsi que celles de ses documents d'urbanisme
       operationId: autoriteParId
       produces:
         - application/json
@@ -105,7 +105,7 @@ paths:
     get:
       tags:
         - document d'urbanisme
-      summary: Retourne le document d'urbanisme défini par son identifiant ainsi que la liste de ses pièces écrites
+      summary: Retourne les caractéristiques du document d'urbanisme défini par son identifiant, y compris la liste de ses pièces écrites
       operationId: docUrbaParId
       produces:
         - application/json
@@ -130,7 +130,7 @@ paths:
     get:
       tags:
         - document d'urbanisme
-      summary: Retourne les métadonnées associées au document d'urbanisme défini par son identifiant
+      summary: Retourne les métadonnées ISO 19115 associées au document d'urbanisme défini par son identifiant
       operationId: mdDocUrbaParId
       produces:
         - application/xml
@@ -258,8 +258,8 @@ paths:
     get:
       tags:
         - servitude d'utilité publique
-      summary: Retourne les territoires pour lesquels au moins un jeu de données est exposé pour la catégorie de SUP fournie
-      operationId: ensembleTerritoiresSup
+      summary: Retourne les territoires pour lesquels au moins un jeu de données (JD) de SUP est exposé pour la catégorie de SUP fournie
+      operationId: territoiresSup
       produces:
         - application/json
       parameters:
@@ -295,7 +295,7 @@ paths:
     get:
       tags:
         - servitude d'utilité publique
-      summary: Retourne les jeux de données exposés pour une catégorie de SUP et un territoire
+      summary: Retourne les jeux de données exposés pour la catégorie de SUP et le territoire
       operationId: jdSup
       produces:
         - application/json
@@ -320,7 +320,7 @@ paths:
               required:
                 - codeSup
                 - codeTerritoire
-                - idjd
+                - dateRef
                 - libelle
               properties:
                 codeSup:
@@ -329,9 +329,9 @@ paths:
                 codeTerritoire:
                   type: string
                   example: 13
-                idjd:
+                dateRef:
                   type: string
-                  description: version du jeu de données
+                  description: date de référence du jeu de données sous la forme AAAAMMJJ
                   example: 20180115
                 libelle:
                   type: string
@@ -341,52 +341,11 @@ paths:
           description: code fourni invalide
         '404':
           description: aucun résultat ne correspond à cette requête
-  '/sup/{codeSup}/{codeTerritoire}/{idjd}/{classeCnig}':
+  '/sup/{codeSup}/{codeTerritoire}/{dateRef}':
     get:
       tags:
         - servitude d'utilité publique
-      summary: Retourne les objets géographiques {classeCnig} correspondants à une catégorie de SUP, un territoire et une version
-      operationId: objetsGeoSup
-      produces:
-        - application/json
-      parameters:
-        - name: codeSup
-          in: path
-          description: code définissant la catégorie de SUP
-          required: true
-          type: string
-        - name: codeTerritoire
-          in: path
-          description: code définissant le territoire sur lequel des SUP sont définies
-          required: true
-          type: string
-        - name: idjd
-          in: path
-          description: version du jeu de données pour la catégorie de SUP et le territoire
-          required: true
-          type: string
-        - name: classeCnig
-          in: path
-          description: classe d'objets géographiques définie par le standard CNIG
-          required: true
-          type: string
-          enum:
-            - ASSIETTE
-            - GENERATEUR
-      responses:
-        '200':
-          description: opération réussie
-          schema:
-            $ref: '#/definitions/FeatureCollection'
-        '400':
-          description: code fourni invalide
-        '404':
-          description: aucun résultat ne correspond à cette requête
-  '/sup/{codeSup}/{codeTerritoire}/{idjd}/actes':
-    get:
-      tags:
-        - servitude d'utilité publique
-      summary: Retourne les URL des actes exposés correspondants à une catégorie de SUP, un territoire et une version
+      summary: Retourne les caractéristiques du JD de SUP correspondant à la catégorie de SUP, le territoire et la date de référence, y compris les URL des actes exposés
       operationId: lesActesSup
       produces:
         - application/json
@@ -401,9 +360,9 @@ paths:
           description: code définissant le territoire sur lequel des SUP sont définies
           required: true
           type: string
-        - name: idjd
+        - name: dateRef
           in: path
-          description: version du jeu de données pour la catégorie de SUP et le territoire
+          description: date de référence du jeu de données pour la catégorie de SUP et le territoire
           required: true
           type: string
       responses:
@@ -418,7 +377,40 @@ paths:
           description: code fourni invalide
         '404':
           description: aucun résultat ne correspond à cette requête
-  '/sup/{codeSup}/{codeTerritoire}/{idjd}/actes/{path}':
+  '/sup/{codeSup}/{codeTerritoire}/{dateRef}/metadata':
+    get:
+      tags:
+        - document d'urbanisme
+      summary: Retourne les métadonnées ISO 19115 associées au JD de SUP défini par la catégorie de SUP, le territoire et la date de référence
+      operationId: mdSupParId
+      produces:
+        - application/xml
+      parameters:
+        - name: codeSup
+          in: path
+          description: code définissant la catégorie de SUP
+          required: true
+          type: string
+        - name: codeTerritoire
+          in: path
+          description: code définissant le territoire sur lequel des SUP sont définies
+          required: true
+          type: string
+        - name: dateRef
+          in: path
+          description: date de référence du jeu de données pour la catégorie de SUP et le territoire
+          required: true
+          type: string
+      responses:
+        '200':
+          description: document XML des métadonnées
+        '400':
+          description: paramètre fourni invalide
+        '404':
+          description: aucun résultat ne correspond à cette requête
+        '500':
+          description: erreur du serveur
+  '/sup/{codeSup}/{codeTerritoire}/{dateRef}/actes/{path}':
     get:
       tags:
         - servitude d'utilité publique
@@ -437,9 +429,9 @@ paths:
           description: code définissant le territoire sur lequel des SUP sont définies
           required: true
           type: string
-        - name: idjd
+        - name: dateRef
           in: path
-          description: version du jeu de données pour la catégorie de SUP et le territoire
+          description: date de référence du jeu de données pour la catégorie de SUP et le territoire
           required: true
           type: string
         - name: path
@@ -452,6 +444,47 @@ paths:
           description: un fichier PDF
           schema:
             type: file
+        '400':
+          description: code fourni invalide
+        '404':
+          description: aucun résultat ne correspond à cette requête
+  '/sup/{codeSup}/{codeTerritoire}/{dateRef}/{classeCnig}':
+    get:
+      tags:
+        - servitude d'utilité publique
+      summary: Retourne les objets géographiques {classeCnig} correspondants à une catégorie de SUP, un territoire et une version
+      operationId: objetsGeoSup
+      produces:
+        - application/json
+      parameters:
+        - name: codeSup
+          in: path
+          description: code définissant la catégorie de SUP
+          required: true
+          type: string
+        - name: codeTerritoire
+          in: path
+          description: code définissant le territoire sur lequel des SUP sont définies
+          required: true
+          type: string
+        - name: dateRef
+          in: path
+          description: date de référence du jeu de données pour la catégorie de SUP et le territoire
+          required: true
+          type: string
+        - name: classeCnig
+          in: path
+          description: classe d'objets géographiques définie par le standard CNIG
+          required: true
+          type: string
+          enum:
+            - ASSIETTE
+            - GENERATEUR
+      responses:
+        '200':
+          description: opération réussie
+          schema:
+            $ref: '#/definitions/FeatureCollection'
         '400':
           description: code fourni invalide
         '404':
@@ -583,5 +616,5 @@ definitions:
               type: object
               description: géométrie de l'objet géographique
 externalDocs:
-  description: dépôt GitHub de documentation
+  description: Documentation de l'API
   url: https://github.com/benoitdavidfr/geoapi-urba

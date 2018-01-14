@@ -4,6 +4,8 @@ name: build.php
 title: build.php - génération de la base urba à partir des zip
 doc: |
 journal: |
+  14/1/2018:
+    filtrage des fichiers shapes admissibles
   11/1/2018:
     améliorations, il existe une variété de nom de shape non conformes au standard
     ex: 
@@ -71,7 +73,7 @@ while (($zipname = readdir($dir)) !== false) {
   cleanDir('tmp');
   $shapes = []; // liste des couches sous la forme [ basename => ext ]
   $Pieces_ecrites = []; // liste des chemin des pièces écrites
-  if (1) { // dézippage des SHP
+  if (1) { // dézippage
     echo "zip=$zipname\n";
     $zip = new ZipArchive;
     if ($zip->open("zips/$zipname")!==TRUE) {
@@ -89,21 +91,25 @@ while (($zipname = readdir($dir)) !== false) {
         if ($ext == 'SHP')
           $shapes[substr($bname, 0, strlen($bname)-4)] = substr($bname, strlen($bname)-3);
       }
-      elseif (($ext=='PDF') and preg_match('!/Pieces_ecrites/!', $path, $matches)) {
-        if (preg_match('!^(([\d]+)_(PLU|PLUi|POS|CC)_(\d+))/Pieces_ecrites/(.*)$!', $path, $matches))
+      elseif (($ext=='PDF') and preg_match('!/(Pieces_ecrites|Actes)/!i', $path, $matches)) {
+        if (preg_match('!^(([\d]+)_(PLU|PLUi|POS|CC)_(\d+))/Pieces_ecrites/(.*)$!i', $path, $matches))
           $Pieces_ecrites[] = [$matches[5], $path];
+        elseif (preg_match('!/Actes/(.*)$!i', $path, $matches))
+          $Pieces_ecrites[] = [$matches[1], $path];
         else
           $Pieces_ecrites[] = [$path, $path];
       }
     }
     $zip->close();
-    echo "Liste des shapes:"; print_r($shapes);
-    echo "Liste des Pieces_ecrites:"; print_r($Pieces_ecrites);
+    //echo "Liste des shapes:"; print_r($shapes);
+    //echo "Liste des Pieces_ecrites:"; print_r($Pieces_ecrites);
   }
   
   $idurba = '';
+  $duRecord = [];
+  $supRecord = [];
+  // ZIP DU
   if (preg_match('!^(([\d]+)_(PLU|PLUi|POS|CC)_(\d+))\.zip$!i', $zipname, $matches)) {
-    // DU
     $idurba = $matches[1];
     $idAutorite = $matches[2];
     $nature = $matches[3];
@@ -138,22 +144,28 @@ while (($zipname = readdir($dir)) !== false) {
         echo "Erreur: ",$e->getMessage(),"\n";
       }
     }
-    echo "duRecord = "; print_r($duRecord);
+    //echo "duRecord = "; print_r($duRecord);
     $baseurba->du->insertOne($duRecord);
   }
   // ZIP SUP
-  elseif (preg_match('!^(\d+)_([^_]+)_((\d+)|(2[AB])|(R\d+))_(\d+)\.zip$!i', $zipname, $matches)) {
+  elseif (preg_match('!^(\d+)_([^_]+)_(([\dAB]+)|(R\d+))_(\d+)\.zip$!i', $zipname, $matches)) {
     $codeSup = $matches[2];
     $codeTerritoire = $matches[3];
-    $dateref = $matches[7];
+    $dateref = $matches[6];
+    if ((strlen($codeTerritoire)==3) and (substr($codeTerritoire,0,1)=='0'))
+      $codeTerritoire = substr($codeTerritoire,1);
     $supRecord = [
       '_id'=> $codeSup.'_'.$codeTerritoire.'_'.$dateref,
       'codeSup'=> $codeSup,
       'codeTerritoire'=> $codeTerritoire,
       'dateref'=> $dateref,
+      'zipname'=> $zipname,
+      'actes'=> $Pieces_ecrites,
     ];
     echo "supRecord = "; print_r($supRecord);
     $baseurba->sup->insertOne($supRecord);
+    echo "Liste des shapes:"; print_r($shapes);
+    echo "Liste des Pieces_ecrites:"; print_r($Pieces_ecrites);
   }
   // ZIP SCOT
   elseif (preg_match('!^\d+_SCOT\.zip$!i', $zipname, $matches)) {
@@ -161,8 +173,45 @@ while (($zipname = readdir($dir)) !== false) {
   else
     die("No match ligne ".__LINE__." on $zipname\n");
   
-  if ($idurba) {
+  if ($shapes) {
     foreach ($shapes as $shape => $shpext) {
+      // definition de la collection dans laquelle seront stockés les objets géographiques
+      $collection = strtolower($shape);
+      if ($duRecord) {
+        if (preg_match('!^(zone_urba|secteur_cc)!', $collection, $matches))
+          $collection = $matches[1];
+        elseif ($collection == 'secteur')
+          $collection = 'secteur_cc';
+        elseif (preg_match('!^(prescription|info|habillage)_(pct|lin|surf|txt)!', $collection, $matches))
+          $collection = $matches[1].'_'.$matches[2];
+        elseif (preg_match('!^(information)_(pct|lin|surf|txt)$!', $collection, $matches))
+          $collection = 'info_'.$matches[2];
+        elseif (preg_match('!^(prescritpion)_(pct|lin|surf|txt)$!', $collection, $matches))
+          $collection = 'prescription_'.$matches[2];
+        elseif (in_array($collection,
+                         ['doc_urba','doc_urba_com','ano_dessin','commune_pci_vecteur',
+                          'er_dragey_ronthon','epr_dragey_ronthon'])) {
+          echo "Attention, le fichier $shape.$shpext n'est pas prévu par le standard CNIG\n";
+          continue;
+        }
+         else
+          die("Erreur: pour un JD de PLU, fichier shape $shape.$shpext inconnu\n");
+      }
+      elseif ($supRecord) {
+        $pattern_territoire = '(_r?[\dab]+|)?';
+        $patern1 = "!^([^_]+)_(assiette|generateur)_sup_([slp])$pattern_territoire$!";
+        $pattern2 = "!^(([^_]+)_)?(acte_sup|gestionnaire_sup|servitude|servitude_acte_sup)$pattern_territoire$!";
+        if (preg_match($patern1, $collection, $matches)) {
+          $collection = 'sup_'.$matches[2].'_'.$matches[3];
+        }
+        elseif (preg_match($pattern2, $collection)) {
+          echo "Attention, le fichier $shape.$shpext n'est pas prévu par le standard CNIG\n";
+          continue;
+        }
+        else {
+          die("Erreur: pour un JD de SUP, fichier shape $shape.$shpext inconnu\n");
+        }
+      }
       if (is_file("tmp/$shape.json")) {
         //echo "unlink($bname.json)<br>\n";
         unlink("tmp/$shape.json");
@@ -178,10 +227,16 @@ while (($zipname = readdir($dir)) !== false) {
       $string = exec($command, $output, $return_var);
       if ($return_var<>0) {
         print_r($output);
-        throw new Exception("Erreur sur commande $command");
+        $s_srs = "-s_srs EPSG:2154 ";
+        echo "Nouvel essai avec $s_srs\n";
+        $command = "/usr/bin/ogr2ogr -f GeoJSON -t_srs EPSG:4326 $s_srs tmp/$shape.json tmp/$shape.$shpext";
+        $string = exec($command, $output, $return_var);
+        if ($return_var<>0) {
+          print_r($output);
+          throw new Exception("Erreur sur commande $command");
+        }
       }
       $fp = fopen("tmp/$shape.json",'r');
-      $shape = strtolower($shape);
       if (!$fp)
         throw new Exception("Erreur d'ouverture de $shape.json");
       while (($line = fgets($fp)) !== FALSE) {
@@ -200,9 +255,11 @@ while (($zipname = readdir($dir)) !== false) {
         if (!$feature)
           throw new Exception("Erreur '".self::json_message_error(json_last_error())
                               ."' dans json_encode() sur: $line");
-        if (!isset($feature['IDURBA']))
+        if ($idurba and !isset($feature['IDURBA']))
           $feature['IDURBA'] = $idurba;
-        $baseurba->$shape->insertOne($feature);
+        elseif ($supRecord)
+          $feature['IDSUP'] = $supRecord['_id'];
+        $baseurba->$collection->insertOne($feature);
       }
       echo "Fin OK de lecture de tmp/$shape.json\n";
     }
