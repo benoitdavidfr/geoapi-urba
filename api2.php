@@ -203,14 +203,21 @@ if (preg_match('!^/docurba/([^/]+)/Pieces_ecrites/(.+)$!', $_SERVER['PATH_INFO']
     echo "Erreur: aucune pièce écrite ne correspond à $shortpath\n";
     die();
   }
-  header('Content-type: application/pdf; charset="utf8"');
+  $ext = substr($bname, strrpos($shortpath, '.')+1);
+  $ext = strtolower($ext);
+  $mimeTypes = [
+    'txt'=> 'text/plain',
+    'pdf'=> 'application/pdf',
+    'jpeg'=> 'image/jpeg',
+    'jpg'=> 'image/jpeg',
+    'doc'=> 'application/msword',
+    'docx'=> 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'odt'=> 'application/vnd.oasis.opendocument.text',
+    'ods'=> 'application/vnd.oasis.opendocument.spreadsheet',
+  ];
+  $mimeType = isset($mimeTypes[$ext]) ? $mimeTypes[$ext] : $mimeTypes['txt'];
+  header("Content-type: $mimeType; charset=\"utf8\"");
   $pathinzip = "zip://build/zips/$idurba.zip#$longpath";
-  /*$fzip = fopen($pathinzip, 'r');
-  if ($fzip === FALSE)
-    die("Erreur d'ouverture de $pathinzip");
-  while ($buff = fread($fzip, 4*1024))
-    echo $buff;
-  fclose($fzip);*/
   if (readfile($pathinzip) === FALSE) {
     header('Content-type: text/plain; charset="utf8"');
     die("Erreur d'ouverture de $pathinzip");
@@ -258,8 +265,8 @@ if (preg_match('!^/docurba/([^/]+)/([^/]+)$!', $_SERVER['PATH_INFO'], $matches))
 }
 
 
-// /sup
-if (preg_match('!^/sup$!', $_SERVER['PATH_INFO'])) {
+// /codesup
+if (preg_match('!^/codesup$!', $_SERVER['PATH_INFO'])) {
   $yaml = spycLoad(__DIR__.'/supcat.yaml');
   if (!$yaml) {
     header("HTTP/1.1 500 Internal Server Error");
@@ -283,9 +290,34 @@ if (preg_match('!^/sup$!', $_SERVER['PATH_INFO'])) {
   die();
 }
 
-// /sup/{codeSup}
+// /jdsup
+if (preg_match('!^/jdsup$!', $_SERVER['PATH_INFO'], $matches)) {
+  $mgdbclient = new MongoDB\Client($mongouri);
+  $baseurba = $mgdbclient->urba;
+  $codeSups = [];
+  foreach ($baseurba->sup->find() as $sup) {
+    $sup = json_decode(json_encode($sup), true);
+    $codeSups[$sup['codeSup']] = 1;
+  }
+  $yaml = spycLoad(__DIR__.'/supcat.yaml');
+  if (!$yaml) {
+    header("HTTP/1.1 500 Internal Server Error");
+    header('Content-type: text/plain; charset="utf8"');
+    die("Erreur: fichier supcat.yaml non trouvé\n");
+  }
+  $result = [];
+  foreach (array_keys($codeSups) as $codeSup) {
+    $libelleSup = isset($yaml['contents'][$codeSup]['libelle']) ? $yaml['contents'][$codeSup]['libelle'] : "inconnu";
+    $result[] = ['codeSup'=> $codeSup, 'libelleSup'=> $libelleSup ];
+  }
+  header('Content-type: application/json; charset="utf8"');
+  echo json_encode($result, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
+  die();
+}
+
+// /jdsup/{codeSup}
 // Retourne les territoires pour lesquels au moins un jeu de données est exposé pour la catégorie de SUP fournie
-if (preg_match('!^/sup/([^/]+)$!', $_SERVER['PATH_INFO'], $matches)) {
+if (preg_match('!^/jdsup/([^/]+)$!', $_SERVER['PATH_INFO'], $matches)) {
   $codeSup = $matches[1];
   $mgdbclient = new MongoDB\Client($mongouri);
   $baseurba = $mgdbclient->urba;
@@ -303,9 +335,9 @@ if (preg_match('!^/sup/([^/]+)$!', $_SERVER['PATH_INFO'], $matches)) {
   die();
 }
 
-// /sup/{codeSup}/{codeTerritoire}
+// /jdsup/{codeSup}/{codeTerritoire}
 // Retourne les jeux de données exposés pour une catégorie de SUP et un territoire
-if (preg_match('!^/sup/([^/]+)/([^/]+)$!', $_SERVER['PATH_INFO'], $matches)) {
+if (preg_match('!^/jdsup/([^/]+)/([^/]+)$!', $_SERVER['PATH_INFO'], $matches)) {
   $codeSup = $matches[1];
   $codeTerritoire = $matches[2];
   $mgdbclient = new MongoDB\Client($mongouri);
@@ -324,14 +356,19 @@ if (preg_match('!^/sup/([^/]+)/([^/]+)$!', $_SERVER['PATH_INFO'], $matches)) {
       'dateRef'=> $dateRef,
     ];
   }
+  if (!$result) {
+    header("HTTP/1.1 404 Bad Request");
+    header('Content-type: text/plain; charset="utf8"');
+    echo "Aucun JD de SUP ne correspond à la catégorie $codeSup et au territoire $codeTerritoire\n";
+    die();
+  }
   header('Content-type: application/json; charset="utf8"');
   echo json_encode($result, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
   die();
 }
 
-// /sup/{codeSup}/{codeTerritoire}/{dateRef}
-// Retourne les URL des actes exposés correspondants à une catégorie de SUP, un territoire et une version
-if (preg_match('!^/sup/([^/]+)/([^/]+)/([^/]+)$!', $_SERVER['PATH_INFO'], $matches)) {
+// /jdsup/{codeSup}/{codeTerritoire}/{dateRef}
+if (preg_match('!^/jdsup/([^/]+)/([^/]+)/([^/]+)$!', $_SERVER['PATH_INFO'], $matches)) {
   $codeSup = $matches[1];
   $codeTerritoire = $matches[2];
   $dateRef = $matches[3];
@@ -350,11 +387,11 @@ if (preg_match('!^/sup/([^/]+)/([^/]+)/([^/]+)$!', $_SERVER['PATH_INFO'], $match
     'codeSup'=> $sup['codeSup'],
     'codeTerritoire'=> $sup['codeTerritoire'],
     'dateRef'=> $sup['dateref'],
-    'uri'=> "http://urba.geoapi.fr/sup/$codeSup/$codeTerritoire/$dateRef",
+    'uri'=> "http://urba.geoapi.fr/jdsup/$codeSup/$codeTerritoire/$dateRef",
     'actes'=> [],
   ];
   foreach ($sup['actes'] as $acte) {
-    $result['actes'][] = "http://urba.geoapi.fr/sup/$codeSup/$codeTerritoire/$dateRef/Actes/$acte[0]";
+    $result['actes'][] = "http://urba.geoapi.fr/jdsup/$codeSup/$codeTerritoire/$dateRef/Actes/$acte[0]";
   }
   //echo "<pre>"; print_r($sup); print_r($result);
   header('Content-type: application/json; charset="utf8"');
@@ -362,17 +399,17 @@ if (preg_match('!^/sup/([^/]+)/([^/]+)/([^/]+)$!', $_SERVER['PATH_INFO'], $match
   die();
 }
 
-// /sup/{codeSup}/{codeTerritoire}/{dateRef}/metadata
-if (preg_match('!^/sup/([^/]+)/([^/]+)/([^/]+)/metadata$!', $_SERVER['PATH_INFO'], $matches)) {
+// /jdsup/{codeSup}/{codeTerritoire}/{dateRef}/metadata
+if (preg_match('!^/jdsup/([^/]+)/([^/]+)/([^/]+)/metadata$!', $_SERVER['PATH_INFO'], $matches)) {
   header("HTTP/1.1 501 Not Implemented");
   header('Content-type: text/plain; charset="utf8"');
   echo "Erreur: fonctionnalité non implémentée\n";
   die();
 }
 
-// /sup/{codeSup}/{codeTerritoire}/{dateRef}/actes/{path}
+// /jdsup/{codeSup}/{codeTerritoire}/{dateRef}/actes/{path}
 // Retourne en PDF un des actes associés à une SUP
-if (preg_match('!^/sup/([^/]+)/([^/]+)/([^/]+)/Actes/(.+)$!', $_SERVER['PATH_INFO'], $matches)) {
+if (preg_match('!^/jdsup/([^/]+)/([^/]+)/([^/]+)/Actes/(.+)$!', $_SERVER['PATH_INFO'], $matches)) {
   $codeSup = $matches[1];
   $codeTerritoire = $matches[2];
   $dateRef = $matches[3];
@@ -408,9 +445,9 @@ if (preg_match('!^/sup/([^/]+)/([^/]+)/([^/]+)/Actes/(.+)$!', $_SERVER['PATH_INF
   die();
 }
 
-// /sup/{codeSup}/{codeTerritoire}/{dateRef}/{classeCnig}
+// /jdsup/{codeSup}/{codeTerritoire}/{dateRef}/{classeCnig}
 // Retourne les objets géographiques {classeCnig} correspondants à une catégorie de SUP, un territoire et une version
-if (preg_match('!^/sup/([^/]+)/([^/]+)/([^/]+)/((ASSIETTE|GENERATEUR)[^/]+)$!', $_SERVER['PATH_INFO'], $matches)) {
+if (preg_match('!^/jdsup/([^/]+)/([^/]+)/([^/]+)/((ASSIETTE|GENERATEUR)[^/]+)$!', $_SERVER['PATH_INFO'], $matches)) {
   $codeSup = $matches[1];
   $codeTerritoire = $matches[2];
   $dateRef = $matches[3];

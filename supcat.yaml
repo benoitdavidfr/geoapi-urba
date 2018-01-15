@@ -1,0 +1,174 @@
+titre: catégories de SUP
+source: http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/160115_Guide_methodologique_annexe1_nomenclature_cle5f2f2b.pdf?arg=177833337&cle=2d7b13f936b04640901373186d7e38a203c56fe0&file=pdf%2F160115_Guide_methodologique_annexe1_nomenclature_cle5f2f2b.pdf
+maj: 2016-01-15
+contents:
+  A1:
+    libelle: Servitude relative à la protection des bois et forêts soumis au régime forestier
+  A2:
+    libelle: Servitude attachée à l'établissement des canalisations souterraines d'irrigation
+    urlFiche: http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/fiche_a2_cle551f36.pdf?arg=177834603&cle=d5ab1f8418ebaabe4f4ca0510a367c41df97c613&file=pdf%2Ffiche_a2_cle551f36.pdf
+  A3:
+    libelle: Servitude de passage des engins mécaniques d'entretien et de dépôt des produits de curage et faucardement attachées aux canaux d'irrigation et émissaires d'assainissement
+    urlFiche:  http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/141014_A3_consolidee_cle7e11fd.pdf?arg=177833331&cle=cdde77579fe17d48a11f12a4ed091a7668f08a65&file=pdf%2F141014_A3_consolidee_cle7e11fd.pdf
+  A4:
+    libelle: Servitude de passage dans le lit ou sur les berges de cours d’eau non domaniaux
+    urlFiche:  http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/130613_A4_consolidee_cle746a6e.pdf?arg=177833346&cle=033e366d98f1a8be6f5f1030729cde15e8cca258&file=pdf%2F130613_A4_consolidee_cle746a6e.pdf
+  A5:
+    libelle: Servitude attachée aux canalisations publiques d'eau et d'assainissement
+    urlFiche: http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/fiche_a5_cle5cbec6.pdf?arg=177834604&cle=f674983d324a86afac4aaa4cd377f272f3123ae9&file=pdf%2Ffiche_a5_cle5cbec6.pdf
+  A6:
+    libelle: Servitude d'écoulement des eaux nuisibles
+  A7:
+    libelle: Servitude relative aux forêts dites de protection
+    urlFiche: http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/fiche_a7_cle522b4b.pdf?arg=177834446&cle=53b138b061f2142fcb6f73130837fe756f0e63c5&file=pdf%2Ffiche_a7_cle522b4b.pdf
+  A8:
+    libelle: Mise en défense des terrains en montagne et protection des dunes du Pas-de-Calais
+    urlFiche: http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/fiche_a8_cle599c82.pdf?arg=177834447&cle=3e4772a40da8853569ef6051f8cb315f8df3c1f3&file=pdf%2Ffiche_a8_cle599c82.pdf
+  A9:
+    libelle: Zones agricoles protégées
+    urlFiche: http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/fiche_a9_cle5ad4be.pdf?arg=177834448&cle=3569e77dae3dc5c3cda1ec7b539c4909e1a78e5c&file=pdf%2Ffiche_a9_cle5ad4be.pdf
+  AC1:
+    libelle: Servitude de protection des monuments historiques classés ou inscrits
+    urlFiche:  http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/131203_AC1_consolidee_cle631737.pdf?arg=177833324&cle=78d22391237eb7c96e3fac236f8bf7f17efc7bb5&file=pdf%2F131203_AC1_consolidee_cle631737.pdf
+  AC2:
+    libelle: Servitude relative aux sites inscrits et classés
+    urlFiche: http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/fiche_ac2_cle0d5476.pdf?arg=177834644&cle=8a36a37cfd73f5b06f087c0f2da990d2d9a011a9&file=pdf%2Ffiche_ac2_cle0d5476.pdf
+  AC3:
+    libelle: Réserve naturelle
+    urlFiche: http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/fiche_ac3_cle0a84fc.pdf?arg=177834752&cle=acd8aa7cbb576c92543760dd2ba5a3970bf2e752&file=pdf%2Ffiche_ac3_cle0a84fc.pdf
+  AC4:
+    libelle: Zone de protection du patrimoine architectural et urbain
+    urlFiche:  http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/131209_AC4_consolidee_cle6e93af.pdf?arg=177833327&cle=52131b0d7941ae3dade770ffb9ae5b00cabbeb2a&file=pdf%2F131209_AC4_consolidee_cle6e93af.pdf
+  AR1:
+    libelle: Servitude de champs de vue concernant la détermination et la conservation des postes électro-sémaphoriques
+  AR2:
+    libelle: Servitude liée aux ouvrages de défense des côtes ou de sécurité maritime
+  AR3:
+    libelle: Zones et polygones d'isolement concernant les servitudes autour des magasins et établissements servant à la conservation, à la manipulation ou à la fabrication des poudres, munitions, artifices ou explosifs
+  AR4:
+    libelle: Servitude concernant l'établissement de terrains d'atterrissage destinés en partie ou en totalité à l'armée de l'air
+  AR5:
+    libelle: Servitude relative aux fortifications, places-fortes, postes et ouvrages militaires
+  AR6:
+    libelle: Servitude aux abords des champs de tir
+  AS1:
+    libelle: Servitude résultant de l’instauration de périmètres de protection des eaux potables et minérales
+    urlFiche:  http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/130613_AS1_consolidee_cle67cf51.pdf?arg=177833349&cle=27f979026d432774e478631786c1b614bdde7124&file=pdf%2F130613_AS1_consolidee_cle67cf51.pdf
+  AS2:
+    libelle: Périmètres de protection installés autour des établissements de conchyliculture et d'aquaculture et des gisements coquilliers pour la protection des eaux potables et les établissements ostréicoles
+    urlFiche: http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/fiche_as2_cle06b41b.pdf?arg=177834596&cle=1137697a4cea46851eeff9e0ae0df903a8e787b4&file=pdf%2Ffiche_as2_cle06b41b.pdf
+  EL1:
+    libelle: Réserve de terrain en bord de mer
+  EL2:
+    libelle: Défense contre les inondations
+  EL2bis:
+    libelle: Servitude qui concerne la Loire et ses affluents
+  EL3:
+    libelle: Servitude de halage et de marchepied
+    urlFiche:  http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/130611_EL3_consolidee_cle6fdc44.pdf?arg=177833341&cle=28d37215401c31952f7c4d0f70cd2af50219193d&file=pdf%2F130611_EL3_consolidee_cle6fdc44.pdf
+  EL4:
+    libelle: Servitude relative au développement et à la protection des montagnes
+    urlFiche:  http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/131203_EL4_consolidee_cle65fb72.pdf?arg=177833325&cle=51f42b166a187d352028f973ac2f077c3c5c4902&file=pdf%2F131203_EL4_consolidee_cle65fb72.pdf
+  EL5:
+    libelle: Servitude de visibilité sur les voies publiques
+    urlFiche:  http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/131203_EL5_consolidee_cle645c37.pdf?arg=177833326&cle=d702b637f386a5afe15cbd12f0496c4c9d573da5&file=pdf%2F131203_EL5_consolidee_cle645c37.pdf
+  EL6:
+    libelle: Servitude grévant les terrains nécessaires aux routes nationales et aux autoroutes
+    commentaire: La SUP EL6 est obsolète et n'est plus mise en œuvre par la DGITM
+  EL7:
+    libelle: Servitudes attachées à l'alignement des voies nationales, départementales et communales
+    urlFiche:  http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/130927_EL7_consolidee_cle617c99.pdf?arg=177833322&cle=545eda5c43c8f5e0b8c82cf34a49675d8eb01618&file=pdf%2F130927_EL7_consolidee_cle617c99.pdf
+  EL8:
+    libelle: Champs de vue et servitude instituée ou maintenue en application relative à la visibilité des amers, des feux et des phares et au champs de vue des centres de surveillance de la navigation maritimes
+    urlFiche:  http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/130924_EL8_consolidee_cle6cf466.pdf?arg=177833321&cle=65e29589d7b5d77ec473df9b0f82b6a47706c84f&file=pdf%2F130924_EL8_consolidee_cle6cf466.pdf
+  EL9:
+    libelle: Servitude de passage des piétons sur le littoral
+    urlFiche:  http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/160617_Fiche_EL9_cle188ed1.pdf?arg=177834112&cle=fe71c78532903f644a0b1705a6203a0cc5b8b463&file=pdf%2F160617_Fiche_EL9_cle188ed1.pdf
+  EL10:
+    libelle: Parcs nationaux
+    urlFiche:  http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/fiche_el10_cle78e2a7.pdf?arg=177834874&cle=3de5d506278df73daf63352f89e09ec6d3664f3b&file=pdf%2Ffiche_el10_cle78e2a7.pdf
+  EL11:
+    libelle: Servitude relative aux interdiction d'accès grevant les propriétés limitrophes des autoroutes, routes express et déviations d'agglomération
+    urlFiche:  http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/130822_EL11_consolidee_cle7aa151.pdf?arg=177833316&cle=744ca60a652af970e443d8e43730e7908d8ee582&file=pdf%2F130822_EL11_consolidee_cle7aa151.pdf
+  EL12:
+    libelle: Associations syndicales autorisées, associations syndicales constituées d'office et leurs unions
+  I1:
+    libelle: Construction et exploitation de pipe-line d’intérêt général
+  I1bis:
+    libelle: Construction et exploitation de pipe-line
+  I2:
+    libelle: Périmètre de servitude de submersion et d'occupation temporaire
+  I3:
+    libelle: Périmètre de servitude autour d'une canalisation de transport de gaz
+    urlFiche:  http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/130611_I3_consolidee_cle7efafe.pdf?arg=177833342&cle=61e110e16df34a6ab45a6093ac429082c3ee4426&file=pdf%2F130611_I3_consolidee_cle7efafe.pdf
+  I4:
+    libelle: Périmètre de servitude autour d'une ligne électrique aérienne ou souterraine
+    urlFiche:  http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/130612_I4_consolidee_cle7d3327.pdf?arg=177833343&cle=422a8160dcd831a902aad5e503ce785d2a54569e&file=pdf%2F130612_I4_consolidee_cle7d3327.pdf
+  I5:
+    libelle: Construction et exploitation de canalisations de transports de produits chimiques
+  I6:
+    libelle: Servitude relative à l'exploitation des mines et carrières
+    urlFiche:  http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/1712108_fiche_i6_cle17a4d1.pdf?arg=177835065&cle=a83377bdd6287ebdf4054fc3a800810b956d9f86&file=pdf%2F1712108_fiche_i6_cle17a4d1.pdf
+  I7:
+    libelle: Servitude relative à la protection des stockages souterrains de gaz naturel, d'hydrocarbures liquides, liquéfiées ou gazeux ou de produits chimiques à destination industrielle dans les formations naturelles
+  I8:
+    libelle: Servitude relative à la protection des stockages souterrains de gaz naturel, d'hydrocarbures liquides, liquéfiées ou gazeux ou de produits chimiques à destination industrielle dans les cavités étanches naturelles ou artificielles
+  I9:
+    libelle: Canalisation de transport et de distribution de chaleur
+  INT1:
+    libelle: Servitude instituée au voisinage des cimetières
+    urlFiche:  http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/130613_INT1_consolidee_cle7618f1.pdf?arg=177833350&cle=2af916820f55a2d7029cd9e1618c80cbfd98d3f3&file=pdf%2F130613_INT1_consolidee_cle7618f1.pdf
+  JS1:
+    libelle: Servitude de protection des installations sportives
+    urlFiche:  http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/130822_JS1_consolidee_cle6d62ca.pdf?arg=177833317&cle=75ca03e9e048952436156a2c79c9bd1db44bf33c&file=pdf%2F130822_JS1_consolidee_cle6d62ca.pdf
+  PM1:
+    libelle: Plans de prévention des risques naturels prévisibles et plans de prévention des risques miniers - documents valant PPRN
+    urlFiche: http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/fiche_pm1_cle0e79bd.pdf?arg=177835095&cle=62326c1c9136241c39b1362279cb0aad83213925&file=pdf%2Ffiche_pm1_cle0e79bd.pdf
+  PM1bis:
+    libelle: Servitude d'inondation pour la rétention des crues du Rhin
+  PM2:
+    libelle: Servitude relative aux installations classées pour la protection de l'environnement
+    urlFiche:  http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/130613_PM2_consolidee_cle6c5ab4.pdf?arg=177833352&cle=9b4fb15a0ead4c8370b1b6bd0f0aa8380dfdc98c&file=pdf%2F130613_PM2_consolidee_cle6c5ab4.pdf
+  PM3:
+    libelle: Plans de prévention des risques technologiques
+    urlFiche: http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/fiche_pm3_cle078662.pdf?arg=177835096&cle=ccc13553ec66986d3e142f5d40e150fc14366aa8&file=pdf%2Ffiche_pm3_cle078662.pdf
+  PM4:
+    libelle: Zones de rétention d'eau, zones de mobilité des cours d'eau et zones dites "stratégiques pour la gestion de l'eau"
+    urlFiche:  http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/130624_PM4_consolidee_cle6ca8fd.pdf?arg=177833354&cle=c0c836c0bcbe2809597136442dbfb09d3e00c76e&file=pdf%2F130624_PM4_consolidee_cle6ca8fd.pdf
+  PM5:
+    libelle: Servitude relative à l'utilisation du sol lorsque un ouvrage hydraulique présente un danger pour la sécurité publique
+    commentaire: Dispositions insuffisamment précises pour pouvoir être mises en œuvre
+  PM6:
+    libelle: Servitude autour des installations nucléaires de base 
+  PT1:
+    libelle: Servitude de protection des centres de réception radioélectrique contre les perturbations électromagnétiques
+    urlFiche:  http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/130417_PT1_consolidee_cle65179b.pdf?arg=177833340&cle=8fbb064b71630fbd26140bb1ae6eb110e1f390a5&file=pdf%2F130417_PT1_consolidee_cle65179b.pdf
+  PT2:
+    libelle: Servitude de protection des centres radioélectriques d'émission et de réception contre les obstacles
+    urlFiche:  http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/130828_PT2_consolidee_cle63f21a.pdf?arg=177833318&cle=8a24f7a2e9f812138f7525db61e5e3f5ee2669c1&file=pdf%2F130828_PT2_consolidee_cle63f21a.pdf
+  PT3:
+    libelle: Servitude attachée aux réseaux de télécommunication
+    urlFiche:  http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/130624_PT3_consolidee_cle662aba.pdf?arg=177833355&cle=c73f2a9b8744221046fa77a1905f0026499fd302&file=pdf%2F130624_PT3_consolidee_cle662aba.pdf
+  PT4:
+    libelle: Servitude d'élagage relative aux lignes de télécommunication empruntant le domaine public
+  T1:
+    libelle: Servitude relative aux voies ferrées
+    urlFiche:  http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/130612_T1_consolidee_cle77f72e.pdf?arg=177833345&cle=2dcc858d758b4cfa68027a585c65fe4149694737&file=pdf%2F130612_T1_consolidee_cle77f72e.pdf
+  T2:
+    libelle: Zones auxquelles s'applique la servitude de survol de téléphériques
+    urlFiche:  http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/130624_T2_consolidee_cle7a95a5.pdf?arg=177833356&cle=c5274887e5e520c05237fb9a837836447f6e8077&file=pdf%2F130624_T2_consolidee_cle7a95a5.pdf
+  T3:
+    libelle: Zones de servitudes relatives aux aérotrains
+  T4:
+    libelle: Servitude aéronautique de balisage
+    urlFiche:  http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/141014_T4_consolidee_cle7791ff.pdf?arg=177833332&cle=b68c6e57025c00f50c894427c019df3720c7a75d&file=pdf%2F141014_T4_consolidee_cle7791ff.pdf
+  T5:
+    libelle: Servitude aéronautique de dégagement
+    urlFiche: http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/fiche_t5_cle57fa37-1.pdf?arg=177834754&cle=2ce65883b842d9dd4d246f8e9f2780e75be3facd&file=pdf%2Ffiche_t5_cle57fa37-1.pdf
+  T6:
+    libelle: Servitude grévant les terrains nécessaires aux besoins de la navigation aérienne
+    urlFiche: http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/141014_T6_consolidee_cle725161.pdf?arg=177833333&cle=909fa1ce2ff98f461ee4de6eaf5ae30b1069faf0&file=pdf%2F141014_T6_consolidee_cle725161.pdf
+  T7:
+    libelle: Servitude établie à l'extérieur des zones de dégagement
+  T8:
+    libelle: Servitude radioélectrique de protection des installations de navigation et d'atterrissage

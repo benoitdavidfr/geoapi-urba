@@ -4,6 +4,8 @@ name: build.php
 title: build.php - génération de la base urba à partir des zip
 doc: |
 journal: |
+  15/1/2018:
+    filtrage des fichiers par leur extension
   14/1/2018:
     filtrage des fichiers shapes admissibles
   11/1/2018:
@@ -82,23 +84,46 @@ while (($zipname = readdir($dir)) !== false) {
     }
     for ($i=0; $i < $zip->numFiles; $i++) {
       $path = $zip->getNameIndex($i);
+      if (substr($path,-1)=='/')
+        continue;
       $bname = basename($path);
+      if (($bname == 'Thumbs.db') or (substr($bname,0,1)=='.'))
+        continue;
       $ext = substr($bname, strrpos($bname, '.')+1);
       $ext = strtoupper($ext);
       //echo "  path=$path\n";
-      if (in_array($ext,['SHP','SHX','DBF','PRJ','QPJ','CPG'])) {
+      if (in_array($ext,['SHP','SHX','DBF','PRJ','QPJ','CPG','IDX'])) {
         extractFromZip($zipname, $path);
         if ($ext == 'SHP')
           $shapes[substr($bname, 0, strlen($bname)-4)] = substr($bname, strlen($bname)-3);
       }
-      elseif (($ext=='PDF') and preg_match('!/(Pieces_ecrites|Actes)/!i', $path, $matches)) {
-        if (preg_match('!^(([\d]+)_(PLU|PLUi|POS|CC)_(\d+))/Pieces_ecrites/(.*)$!i', $path, $matches))
-          $Pieces_ecrites[] = [$matches[5], $path];
-        elseif (preg_match('!/Actes/(.*)$!i', $path, $matches))
-          $Pieces_ecrites[] = [$matches[1], $path];
+      elseif (in_array($ext,['TAB','DAT','ID','MAP','IND'])) {
+        extractFromZip($zipname, $path);
+        if ($ext == 'TAB')
+          $shapes[substr($bname, 0, strlen($bname)-4)] = substr($bname, strlen($bname)-3);
+      }
+      elseif (in_array($ext,['GML'])) {
+        extractFromZip($zipname, $path);
+        if ($ext == 'GML')
+          $shapes[substr($bname, 0, strlen($bname)-4)] = substr($bname, strlen($bname)-3);
+      }
+      elseif (in_array($ext,['PDF','JPEG','JPG','DOC','ODT','ODS'])
+           and preg_match('!/(Pieces_ecrites|Actes)/!i', $path, $matches)) {
+        if (preg_match('!/(Pieces_ecrites|Actes)/(.*)$!i', $path, $matches))
+          $Pieces_ecrites[] = [$matches[2], $path];
         else
           $Pieces_ecrites[] = [$path, $path];
       }
+      elseif (in_array($ext,['XML'])) {
+      }
+      elseif (in_array($ext,['PDF','HTML'])) {
+      }
+      elseif (in_array($ext,['CSV'])) {
+      }
+      elseif (in_array($ext,['ZIP','TXT','QGS','QML','QIX','SBN','SBX','GBMETA','LOCK'])) {
+      }
+      //else
+        //die("fichier $path extension $ext non extrait\n");
     }
     $zip->close();
     //echo "Liste des shapes:"; print_r($shapes);
@@ -188,14 +213,15 @@ while (($zipname = readdir($dir)) !== false) {
           $collection = 'info_'.$matches[2];
         elseif (preg_match('!^(prescritpion)_(pct|lin|surf|txt)$!', $collection, $matches))
           $collection = 'prescription_'.$matches[2];
-        elseif (in_array($collection,
+        else { /* if (in_array($collection,
                          ['doc_urba','doc_urba_com','ano_dessin','commune_pci_vecteur',
-                          'er_dragey_ronthon','epr_dragey_ronthon'])) {
+                          'er_dragey_ronthon','epr_dragey_ronthon',
+                          '53185_annexe_ass_lin','53185_annexe_ass_pct'])) { */
           echo "Attention, le fichier $shape.$shpext n'est pas prévu par le standard CNIG\n";
           continue;
         }
-         else
-          die("Erreur: pour un JD de PLU, fichier shape $shape.$shpext inconnu\n");
+        //else
+          //die("Erreur: pour un JD de PLU, fichier shape $shape.$shpext inconnu\n");
       }
       elseif ($supRecord) {
         $pattern_territoire = '(_r?[\dab]+|)?';
@@ -204,13 +230,12 @@ while (($zipname = readdir($dir)) !== false) {
         if (preg_match($patern1, $collection, $matches)) {
           $collection = 'sup_'.$matches[2].'_'.$matches[3];
         }
-        elseif (preg_match($pattern2, $collection)) {
+        else { //if (preg_match($pattern2, $collection)) {
           echo "Attention, le fichier $shape.$shpext n'est pas prévu par le standard CNIG\n";
           continue;
         }
-        else {
-          die("Erreur: pour un JD de SUP, fichier shape $shape.$shpext inconnu\n");
-        }
+        //else
+          //die("Erreur: pour un JD de SUP, fichier shape $shape.$shpext inconnu\n");
       }
       if (is_file("tmp/$shape.json")) {
         //echo "unlink($bname.json)<br>\n";
