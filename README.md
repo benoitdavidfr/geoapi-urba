@@ -40,7 +40,7 @@ Exemples de requêtes illustrant l'API:
 - [Liste des JD SUP pour la catégorie PM1](http://urba.geoapi.fr/jdsup?codeSup=PM1)
 - [Caractéristiques du JD SUP PM1 sur le département 40, y compris URL des actes](http://urba.geoapi.fr/jdsup/130010481_PM1_040_20171215)
 - [Consultation d'un des actes du JD SUP PM1 sur le département 40](http://urba.geoapi.fr/jdsup/130010481_PM1_040_20171215/Actes/PM1_PPRI_Aire_sur_Adour_20000629_act.pdf)
-- [Liste des SUP du JD SUP PM1 sur le département 40](http://urba.geoapi.fr/jdsup/130010481_PM1_040_20171215/ASSIETTE_SUP_S)
+- [Liste des zones de SUP du JD SUP PM1 sur le département 40](http://urba.geoapi.fr/jdsup/130010481_PM1_040_20171215/ASSIETTE_SUP_S)
 
 
 
