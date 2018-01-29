@@ -15,6 +15,10 @@ L'API est définie sur Swagger, conformément aux préconisations de la DINSIC :
     à une première mise en oeuvre sur environ 1300 documents d'urbanisme y compris les pièces écrites associées.
   - la [version 0.3.0](https://swaggerhub.com/apis/benoitdavidfr/urba.geoapi.fr/0.3.0) propose l'accès aux
     servitudes d'utilité publiques (SUP).
+  - la [version 0.4.0](https://swaggerhub.com/apis/benoitdavidfr/urba.geoapi.fr/0.4.0) redéfinit l'accès aux
+    servitudes d'utilité publiques (SUP).
+  - la [version 0.5.0](https://swaggerhub.com/apis/benoitdavidfr/urba.geoapi.fr/0.5.0) ajoute à la description
+    des pièces écrites et des actes en ajoutant leur taille.
 
 Ce dépôt contient les scripts de mise en oeuvre de l'API.    
 Les données exposées par l'API sont moissonnées dans le géoportail de l'urbanisme au travers de son flux Atom ;

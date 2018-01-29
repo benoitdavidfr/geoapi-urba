@@ -550,12 +550,6 @@ if (preg_match('!^/jdsup/([^/]+)/Actes/(.+)$!', $_SERVER['PATH_INFO'], $matches)
 }
 
 // /jdsup/{idJdSup}/{classeCnig}
-- 
-- 
-- 
-- 
-- 
-- 
 if (preg_match('!^/jdsup/([^/]+)/([^/]+)$!', $_SERVER['PATH_INFO'], $matches)) {
   $idjdsup = $matches[1];
   if (!in_array(strtoupper($matches[2]), [

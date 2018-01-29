@@ -25,6 +25,7 @@ journal: |
     modif du chemin du répertoire des zips
     changement nom collection sup en jdsup
     ajout de idGest dans jdsup
+    correction d'un bug dans les données géographiques de JDSUP
   27/1/2018 :
     recopie sur http://s0.bdavid.eu/geoapi/urba/
   15/1/2018:
@@ -213,7 +214,7 @@ while (($zipname = readdir($dir)) !== false) {
     ];
     //echo "jdsupRecord = "; print_r($jdsupRecord);
     $baseurba->jdsup->insertOne($jdsupRecord);
-    //echo "Liste des shapes:"; print_r($shapes);
+    echo "Liste des shapes:"; print_r($shapes);
     //echo "Liste des Actes:"; print_r($Pieces_ecrites);
   }
   // ZIP SCOT
@@ -252,7 +253,7 @@ while (($zipname = readdir($dir)) !== false) {
         $patern1 = "!^([^_]+)_(assiette|generateur)_sup_([slp])$pattern_territoire$!";
         $pattern2 = "!^(([^_]+)_)?(acte_sup|gestionnaire_sup|servitude|servitude_acte_sup)$pattern_territoire$!";
         if (preg_match($patern1, $collection, $matches)) {
-          $collection = 'sup_'.$matches[2].'_'.$matches[3];
+          $collection = $matches[2].'_sup_'.$matches[3];
         }
         else { //if (preg_match($pattern2, $collection)) {
           echo "Attention, le fichier $shape.$shpext n'est pas prévu par le standard CNIG\n";
