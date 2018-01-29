@@ -5,7 +5,9 @@ info:
     
     Toutes les données proviennent du [géoportail de l'urbanisme](https://www.geoportail-urbanisme.gouv.fr/).
     
-    Cette version 0.3.0 définit l'accès aux servitudes d'utilité publiques (SUP)
+    Cette version 0.3.0 ajoute à la version 0.2.0 l'accès aux servitudes d'utilité publiques (SUP).
+    Cette définition n'est pas finalisée ;
+    il est notamment nécessaire de prendre en compte l'id du gestionnaire de SUP.
     
   version: 0.3.0
   title: API d'accès aux documents d'urbanisme et aux servitudes d'utilité publique français

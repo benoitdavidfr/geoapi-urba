@@ -1,0 +1,704 @@
+swagger: '2.0'
+info:
+  description: >-
+    API d'accès aux documents d'urbanisme et aux servitudes d'utilité publique français.
+    
+    Toutes les données proviennent du [géoportail de l'urbanisme](https://www.geoportail-urbanisme.gouv.fr/).
+    
+    Cette version 0.5.0 modifie la description des pièces écrites et des actes en ajoutant leur taille.
+    
+  version: 0.5.0
+  title: API d'accès aux documents d'urbanisme et aux servitudes d'utilité publique français
+  termsOfService: 'http://urba.geoapi.fr/terms/'
+  contact:
+    email: urba@geoapi.fr
+  license:
+    name: Licence ouverte version 2.0
+    url: 'https://www.etalab.gouv.fr/wp-content/uploads/2017/04/ETALAB-Licence-Ouverte-v2.0.pdf'
+host: urba.geoapi.fr
+basePath: /
+schemes:
+  - http
+  - https
+paths:
+  /:
+    get:
+      tags:
+        - documentation de l'API
+      summary: Retourne une description succincte de l'API
+      operationId: desc
+      produces:
+        - text/html
+        - application/json
+      responses:
+        '200':
+          description: opération réussie
+  /doc:
+    get:
+      tags:
+        - documentation de l'API
+      summary: Renvoie vers le site proposant la documentation et le code source de l'API
+      operationId: doc
+      produces:
+        - text/html
+      responses:
+        '200':
+          description: opération réussie
+  /spec:
+    get:
+      tags:
+        - documentation de l'API
+      summary: Retourne la spécification de l'API générée par http://swagger.io/ en HTML ou en JSON
+      operationId: spec
+      produces:
+        - text/html
+        - application/json
+      responses:
+        '200':
+          description: opération réussie
+  /terms:
+    get:
+      tags:
+        - documentation de l'API
+      summary: Renvoie les conditions d'utilisation de l'API
+      operationId: terms
+      produces:
+        - text/html
+      responses:
+        '200':
+          description: opération réussie
+  /autorites:
+    get:
+      tags:
+        - document d'urbanisme
+      summary: Retourne les autorités en charge de documents d'urbanisme (communes et EPCI)
+      description: >-
+        La liste retournée peut être filtrée grâce aux paramètres ;
+        les documents d'urbanismes des autorités ne sont pas retournés.
+      operationId: listeAutorites
+      produces:
+        - application/json
+      parameters:
+        - name: commune
+          in: query
+          description: code(s) INSEE d'une (plusieurs) commune(s) intersectant le territoire des autorités
+          type: array
+          items:
+            type: string
+        - name: epci
+          in: query
+          description: code(s) SIRENE d'un (plusieurs) EPCI intersectant le territoire des autorités
+          type: array
+          items:
+            type: string
+        - name: departement
+          in: query
+          description: code(s) INSEE d'un (plusieurs) département(s) intersectant le territoire des autorités
+          type: array
+          items:
+            type: string
+        - name: q
+          in: query
+          description: motif (regexp) correspondant au nom de l'autorité
+          type: string
+      responses:
+        '200':
+          description: opération réussie
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Organisme'
+        '400':
+          description: paramètre fourni invalide
+        '404':
+          description: aucun résultat ne correspond à cette requête
+  '/autorites/{idAutorite}':
+    get:
+      tags:
+        - document d'urbanisme
+      summary: Retourne les caractéristiques de l'autorité définie par son identifiant ainsi que ses documents d'urbanisme
+      operationId: autoriteParId
+      produces:
+        - application/json
+      parameters:
+        - name: idAutorite
+          in: path
+          description: ID de l'autorité à retourner
+          required: true
+          type: string
+      responses:
+        '200':
+          description: opération réussie
+          schema:
+            $ref: '#/definitions/Organisme'
+        '400':
+          description: id fourni invalide
+        '404':
+          description: aucun résultat ne correspond à cette requête
+  '/docurba/{idurba}':
+    get:
+      tags:
+        - document d'urbanisme
+      summary: Retourne les caractéristiques du document d'urbanisme défini par son identifiant, y compris la liste de ses pièces écrites
+      operationId: docUrbaParId
+      produces:
+        - application/json
+      parameters:
+        - name: idurba
+          in: path
+          description: ID du document d'urbanisme demandé
+          required: true
+          type: string
+      responses:
+        '200':
+          description: opération réussie
+          schema:
+            $ref: '#/definitions/DocUrba'
+        '400':
+          description: paramètre fourni invalide
+        '404':
+          description: aucun résultat ne correspond à cette requête
+        '500':
+          description: erreur du serveur
+  '/docurba/{idurba}/metadata':
+    get:
+      tags:
+        - document d'urbanisme
+      summary: Retourne les métadonnées ISO 19115 associées au document d'urbanisme défini par son identifiant
+      operationId: mdDocUrbaParId
+      produces:
+        - application/xml
+      parameters:
+        - name: idurba
+          in: path
+          description: ID du document d'urbanisme demandé
+          required: true
+          type: string
+      responses:
+        '200':
+          description: document XML des métadonnées
+        '400':
+          description: paramètre fourni invalide
+        '404':
+          description: aucun résultat ne correspond à cette requête
+        '500':
+          description: erreur du serveur
+  '/docurba/{idurba}/Pieces_ecrites/{sschemin}':
+    get:
+      tags:
+        - document d'urbanisme
+      summary: Retourne, a priori en PDF, une des pièces écrites associées au document défini par son identifiant
+      operationId: getOnePieceEcriteForDu
+      produces:
+        - application/pdf
+      parameters:
+        - name: idurba
+          in: path
+          description: ID du document d'urbanisme
+          required: true
+          type: string
+        - name: sschemin
+          in: path
+          description: sous-chemin du document dans le zip après Pieces_ecrites/
+          required: true
+          type: string
+      responses:
+        '200':
+          description: un fichier PDF
+          schema:
+            type: file
+        '400':
+          description: paramètre fourni invalide
+        '404':
+          description: aucun résultat ne correspond à cette requête
+  '/docurba/{idurba}/{classeCnig}':
+    get:
+      tags:
+        - document d'urbanisme
+      summary: Retourne les objets géographiques {classeCnig} correspondants au document défini par son identifiant
+      operationId: objetsGeoDeDocUrba
+      produces:
+        - application/json
+      parameters:
+        - name: idurba
+          in: path
+          description: ID du document d'urbanisme
+          required: true
+          type: string
+        - name: classeCnig
+          in: path
+          description: classe d'objets géographiques définie par le standard CNIG
+          required: true
+          type: string
+          enum:
+            - ZONE_URBA
+            - SECTEUR_CC
+            - PRESCRIPTION_PCT
+            - PRESCRIPTION_LIN
+            - PRESCRIPTION_SURF
+            - INFO_PCT
+            - INFO_LIN
+            - INFO_SURF
+            - HABILLAGE_PCT
+            - HABILLAGE_LIN
+            - HABILLAGE_SURF
+            - HABILLAGE_TXT
+      responses:
+        '200':
+          description: opération réussie
+          schema:
+            $ref: '#/definitions/FeatureCollection'
+        '400':
+          description: paramètre fourni invalide
+        '404':
+          description: aucun résultat ne correspond à cette requête
+  /gestionnaires:
+    get:
+      tags:
+        - servitude d'utilité publique
+      summary: Retourne les gestionnaires de servitudes d'utilité publiques (SUP)
+      operationId: gestionnaires
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: opération réussie
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Organisme'
+        '400':
+          description: paramètre fourni invalide
+        '404':
+          description: aucun résultat ne correspond à cette requête
+  /categoriesSup:
+    get:
+      tags:
+        - servitude d'utilité publique
+      summary: Retourne les catégories de servitudes d'utilité publiques (SUP)
+      operationId: categoriesSup
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: opération réussie
+          schema:
+            type: array
+            items:
+              type: object
+              required:
+                - codeSup
+                - libelleSup
+              properties:
+                codeSup:
+                  type: string
+                  description: code définissant la catégorie de SUP
+                  example: PM3
+                libelleSup:
+                  type: string
+                  description: libellé de la catégorie de SUP
+                  example: Zones réglementées des plans de prévention des risques technologiques (PPRT)
+                decoupage:
+                  type: string
+                  description: définition du découpage des jeux de données
+                  enum:
+                    - departement
+                urlFiche:
+                  type: string
+                  description: URL de la fiche présentant cette catégorie de SUP
+                  example: http://www.geoinformations.developpement-durable.gouv.fr/fichier/pdf/fiche_pm3_cle078662.pdf?arg=177835096&cle=ccc13553ec66986d3e142f5d40e150fc14366aa8&file=pdf%2Ffiche_pm3_cle078662.pdf
+  /territoires:
+    get:
+      tags:
+        - servitude d'utilité publique
+      summary: Décrit les codes affectés aux territoires pour lesquels sont définis les JD de SUP 
+      operationId: territoires
+      produces:
+        - application/json
+      parameters:
+        - name: decoupage
+          in: query
+          description: sélection des territoires correspondant à un découpage
+          required: false
+          type: string
+      responses:
+        '200':
+          description: opération réussie
+          schema:
+            type: array
+            items:
+              type: object
+              required:
+                - decoupage
+                - libelle
+                - territoires
+              properties:
+                decoupage:
+                  type: string
+                  description: définition du découpage en territoires
+                  enum:
+                    - département
+                    - région
+                    - métropoleDom
+                    - national
+                libelle:
+                  type: string
+                  description: libellé du découpage
+                  example: Découpage en départements
+                territoires:
+                  type: array
+                  description: code définissant un territoire
+                  items:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: code définissant un territoire
+                        example: '13'
+                      libelle:
+                        type: string
+                        description: libellé du territoire
+                        example: Département des Bouches du Rhône
+                      uri:
+                        type: string
+                        description: URI du territoire
+                        example: http://id.insee.fr/geo/departement/13
+  /jdsup:
+    get:
+      tags:
+        - servitude d'utilité publique
+      summary: >-
+        Retourne les jeux de données (JD) de SUP exposés avec sélection et projection éventuelles sur idGest, codeSup ou codeTerritoire
+      operationId: jdsup
+      produces:
+        - application/json
+      parameters:
+        - name: idGest
+          in: query
+          description: id du(des) gestionnaire(s) des JD de SUP à sélectionner
+          required: false
+          type: string
+        - name: codeSup
+          in: query
+          description: code(s) définissant la(les) catégories de SUP à sélectionner
+          required: false
+          type: string
+        - name: codeTerritoire
+          in: query
+          description: code(s) définissant le(s) territoire(s) des JD de SUP à sélectionner
+          required: false
+          type: string
+        - name: projection
+          in: query
+          description: liste des champs sélectionnés pour la projection parmi idGest, codeSup et codeTerritoire
+          required: false
+          type: string
+      responses:
+        '200':
+          description: opération réussie
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/JdSup'
+  '/jdsup/{idJdSup}':
+    get:
+      tags:
+        - servitude d'utilité publique
+      summary: Retourne les caractéristiques du JD de SUP défini par son id, y compris les URL des actes exposés
+      operationId: jdSupParId
+      produces:
+        - application/json
+      parameters:
+        - name: idJdSup
+          in: path
+          description: id du JD de SUP
+          required: true
+          type: string
+      responses:
+        '200':
+          description: opération réussie
+          schema:
+            $ref: '#/definitions/JdSup'
+        '400':
+          description: code fourni invalide
+        '404':
+          description: aucun résultat ne correspond à cette requête
+  '/jdsup/{idJdSup}/metadata':
+    get:
+      tags:
+        - servitude d'utilité publique
+      summary: Retourne les métadonnées ISO 19115 associées au JD de SUP défini par son id
+      operationId: mdSupParId
+      produces:
+        - application/xml
+      parameters:
+        - name: idJdSup
+          in: path
+          description: id du JD de SUP
+          required: true
+          type: string
+      responses:
+        '200':
+          description: document XML des métadonnées
+        '400':
+          description: paramètre fourni invalide
+        '404':
+          description: aucun résultat ne correspond à cette requête
+        '500':
+          description: erreur du serveur
+  '/jdsup/{idJdSup}/Actes/{sschemin}':
+    get:
+      tags:
+        - servitude d'utilité publique
+      summary: Retourne, a priori en PDF, un des actes associés au JD de SUP défini
+      operationId: unActeSup
+      produces:
+        - application/pdf
+      parameters:
+        - name: idJdSup
+          in: path
+          description: id du JD de SUP
+          required: true
+          type: string
+        - name: sschemin
+          in: path
+          description: sous-chemin du document PDF dans le zip après Actes/
+          required: true
+          type: string
+      responses:
+        '200':
+          description: un fichier a priori PDF
+          schema:
+            type: file
+        '400':
+          description: code fourni invalide
+        '404':
+          description: aucun résultat ne correspond à cette requête
+  '/jdsup/{idJdSup}/{classeCnig}':
+    get:
+      tags:
+        - servitude d'utilité publique
+      summary: Retourne les objets géographiques {classeCnig} correspondants au JD de SUP
+      operationId: objetsGeoSup
+      produces:
+        - application/json
+      parameters:
+        - name: idJdSup
+          in: path
+          description: id du JD de SUP
+          required: true
+          type: string
+        - name: classeCnig
+          in: path
+          description: classe d'objets géographiques définie par le standard CNIG
+          required: true
+          type: string
+          enum:
+            - ASSIETTE_SUP_S
+            - ASSIETTE_SUP_L
+            - ASSIETTE_SUP_P
+            - GENERATEUR_SUP_S
+            - GENERATEUR_SUP_L
+            - GENERATEUR_SUP_P
+      responses:
+        '200':
+          description: opération réussie
+          schema:
+            $ref: '#/definitions/FeatureCollection'
+        '400':
+          description: code fourni invalide
+        '404':
+          description: aucun résultat ne correspond à cette requête
+definitions:
+  Organisme:
+    type: object
+    required:
+      - id
+      - libelle
+      - nature
+      - etat
+      - uri
+    properties:
+      id:
+        type: string
+        example: '21054'
+      libelle:
+        type: string
+        example : Commune de Beaune
+      nature:
+        type: string
+        description: nature de l'organisme
+        enum:
+          - commune
+          - EPCI
+          - Service de l'Etat
+          - Etablissement public de l'Etat
+      departement:
+        type: string
+        description: code du département de l'organisme
+        example: '21'
+      etat:
+        type: string
+        description: état de l'organisme
+        enum:
+          - actuel
+          - périmé
+      uri:
+        type: string
+        example: http://urba.geoapi.fr/autorites/21054
+      docUrba:
+        type: array
+        items:
+          $ref: '#/definitions/DocUrba'
+      jdSup:
+        type: array
+        items:
+          $ref: '#/definitions/JdSup'
+  DocUrba:
+    type: object
+    required:
+      - idurba
+      - nature
+      - approbation
+      - uri
+    properties:
+      idurba:
+        type: string
+        description: id du document d'urbanisme
+      libelle:
+        type: string
+        description: libellé du document d'urbanisme
+      idAutorite:
+        type: string
+        description: id de l'autorité en charge du document d'urbanisme
+      libelleAutorite:
+        type: string
+        description: libellé de l'autorité en charge du document d'urbanisme
+      departement:
+        type: string
+        description: département dans lequel le document d'urbanisme se situe
+      nature:
+        type: string
+        description: nature du document d'urbanisme
+        enum:
+          - PLU
+          - PLUI
+          - POS
+          - CC
+          - PSMV
+      etat:
+        type: string
+        description: état du document
+        enum:
+          - arrêté
+          - approuvé
+          - opposable
+          - annulé
+          - partiellement annulé
+          - remplacé
+          - abrogé
+          - caduc
+      approbation:
+        type: string
+        description: date d'approbation du document par l'autorité en charge
+      fin:
+        type: string
+        description: date de fin d'opposabilité s'il n'est plus opposable
+      uri:
+        type: string
+      piecesEcrites:
+        type: array
+        items:
+          type: object
+          description: liste des pièces écrites
+          properties:
+            url:
+              type: string
+              description: URL de la pièce écrite
+            taille:
+              type: string
+              description: taille de la pièce écrite
+  JdSup:
+    type: object
+    required:
+      - idjdsup
+      - idGest
+      - codeSup
+      - codeTerritoire
+      - dateRef
+      - uri
+    properties:
+      idjdsup:
+        type: string
+        description: id du JD de SUP
+      libelle:
+        type: string
+        description: libellé du JD de SUP
+      idGest:
+        type: string
+        description: id de l'organisme gestionaire du JD de SUP
+      libelleGest:
+        type: string
+        description: libellé de l'organisme gestionaire du JD de SUP
+      codeSup:
+        type: string
+        description: code de la catégorie de SUP
+      libelleSup:
+        type: string
+        description: libellé de la catégorie de SUP
+      codeTerritoire:
+        type: string
+        description: code du territoire couvert par le JD de SUP
+      libelleTerritoire:
+        type: string
+        description: libellé du territoire couvert par le JD de SUP
+      dateRef:
+        type: string
+        description: date de référence du jeu de données
+      uri:
+        type: string
+      actes:
+        type: array
+        items:
+          type: object
+          description: liste des actes
+          properties:
+            url:
+              type: string
+              description: URL de l'acte
+            taille:
+              type: string
+              description: taille de l'acte
+  FeatureCollection:
+    type: object
+    required:
+      - type
+      - features
+    properties:
+      type:
+        type: string
+        description: la valeur 'FeatureCollection'
+        example: FeatureCollection
+      features:
+        type: array
+        description: liste des Features
+        items:
+          type: object
+          required:
+            - type
+            - properties
+            - geometry
+          properties:
+            type:
+              type: string
+              description: la valeur 'Feature'
+              example: Feature
+            properties:
+              type: object
+              description: propriétés de l'objet géographique
+            geometry:
+              type: object
+              description: géométrie de l'objet géographique
+externalDocs:
+  description: Documentation de l'API
+  url: https://github.com/benoitdavidfr/geoapi-urba

@@ -1,24 +1,27 @@
 path: /geoapi/urba/build
 title: génération des données utilisées pour l'API urba.geoapi.fr
 doc: |
-  Dans l'idée de prototyper une API d'accès au GpU,
+  Prototypage d'une API d'accès au GpU,
   téléchargement des données du GpU au travers du flux Atom.
   Téléchargement de docs du GpU sur une machine OVH, arrêt sur disque 100 Go plein.
-  Il faut maintenant structurer une base correspondant à l'API puis développer l'API.
-  Je pourrais développer l'API sur Alwaysdata et utiliser OVH comme base documentaire.
 journal: |
+  28/1/2018 :
+    modification du chemin du répertoire des zips
+  27/1/2018 :
+    recopie sur http://s0.bdavid.eu/geoapi/urba/
   11/1/2018 :
     amélioration de build.php
   6/1/2018 :
     création
 htmlFiles:
   - /geoapi/urba/build/urlgpu.yaml
+  - /geoapi/urba/build/schema.yaml
 phpScripts:
   - /geoapi/urba/build/dwnld.php
   - /geoapi/urba/build/build.php
   - /geoapi/urba/build/atom.php
+  - /geoapi/urba/build/mkaut.php
+  - /geoapi/urba/build/mkgest.php
 phpIncludes:
-  - /geoapi/urba/build/atom.php
-  - /geoapi/urba/build/dwnld.php
-  - /geoapi/urba/build/build.php
+  - /geoapi/urba/build/dbase.inc.php
   

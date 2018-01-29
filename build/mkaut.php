@@ -3,6 +3,7 @@
 name: mkaut.php
 title: mkaut.php - génération des autorités dans la base urba à partir d'Admin-Express
 doc: |
+  Nécessite le chargement préalable de la base MongoDB AdminExpress, voir ~/html/admingeo/adminexpress
   1295 autorités déduites des DU
   48 communes absentes d'Admin-Express 2017-12
   EPCI non traités à ce stade
